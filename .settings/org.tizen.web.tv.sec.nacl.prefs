@@ -1,0 +1,5 @@
+addPrivileges=http\://developer.samsung.com/privilege/drminfo,http\://developer.samsung.com/privilege/drmplay,http\://tizen.org/privilege/appmanager.certificate,http\://tizen.org/privilege/internet,http\://tizen.org/privilege/tv.inputdevice
+customPepperPath=true
+eclipse.preferences.version=1
+pepperVersion=C\:\\Users\\jan.husak\\pepper_56
+removePrivileges=

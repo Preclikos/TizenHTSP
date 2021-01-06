@@ -1,0 +1,9 @@
+Build instructions:
+
+1. Make necessary changes to environment variables:
+   - set NACL_SDK_ROOT to your pepper_42 directory
+   - append the appropriate toolchain to PATH:
+     $NACL_SDK_ROOT/toolchain/<os-specific_pnacl_toolchain>/bin
+
+2. In the Debug directory, run:
+   make
