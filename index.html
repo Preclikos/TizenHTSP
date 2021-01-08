@@ -39,9 +39,19 @@
   var listenerDiv = document.getElementById("listener");
   var nacl_module = document.getElementById("nacl_module");
   
+  var x = 0;
   /* Handles messages sent from NaCl app by PostMessage(). */
   function handleMessage(message) {
-    document.getElementById("nacl_output").innerHTML += message.data;
+  if(x < 30)
+  {
+  	document.getElementById("nacl_output").innerHTML += message.data +"<br />";
+  }
+  else
+  {
+      document.getElementById("nacl_output").innerHTML = message.data +"<br />";
+      x = 0;
+  }
+  x++;
   }
   
   /* An utility function. */

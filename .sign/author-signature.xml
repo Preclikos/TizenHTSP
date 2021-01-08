@@ -9,23 +9,23 @@
 </Reference>
 <Reference URI="CurrentBin%2Fhello_world_cpp.pexe">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>Q4zJdfZ2ELOWjrfv1E0Xt6968wDTKnz6ULDr6XwMR4XAn/McudwdcdSuClvGoIgaECZZMBb2BcDg
-erhs/vYPqA==</DigestValue>
+<DigestValue>XSh83ZZq7MT2BLB3WEakffNShMu7vrtmSLmdbmfS3c1N1sAp/Nek194ddMx5uuy51O4q5Yn5hxJ+
+mYOZT11y0A==</DigestValue>
 </Reference>
 <Reference URI="CurrentBin%2Fhello_world_cpp_armv7.nexe">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>xbZ+YNUer9jwfZmDr72JH3LS8RZy10G/+E50D/BlyAYEQAB980G1AdlDYAYNSj03BWFA/Q0Pv+wO
-azCUoMs4eQ==</DigestValue>
+<DigestValue>1sI3hWxWembjMSr74DzXxMAGV2LaApDU04yLgCG2D7W+IFC+QoJSu6+REnSl1vyv2su+9BaBRmvF
+LNTKaDz7zQ==</DigestValue>
 </Reference>
 <Reference URI="CurrentBin%2Fhello_world_cpp_i686.nexe">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>Qway14bYaSKb6Cv1nE0UOxCQByFUICI58GWfjzcg1pPHMP9BQr26ViQCo1BxKwvmKCDf1rdqdvXM
-X4D/+A9Tqg==</DigestValue>
+<DigestValue>Wyad3FFNFoMNufycV1GHDTzW0vSS5adat3ID0PMY5tpB4PTSVfjDG6C8OXsC/gTdz48ltL/6solv
+tk6MIVVbHg==</DigestValue>
 </Reference>
 <Reference URI="CurrentBin%2Fhello_world_cpp_x86-64.nexe">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>5vFDvZxyKXFs04a/l3VQuP9UqZkV+xIQka36r2jfr9CQb1hO6h5zwO3udiSPZlxSS3hvH6dTkNCK
-i14K8J70YA==</DigestValue>
+<DigestValue>0hy5Rn4s3WigcSrXxAMgPRCFlrrZOtdNb8tTPG2nROSZhxvS1+Hcyh69HQVJy7kYKLws9r1gqb9S
+JTGOgMCddw==</DigestValue>
 </Reference>
 <Reference URI="CurrentBin%2Fnacl_clean.py">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
@@ -49,8 +49,8 @@ dK41R3IGgg==</DigestValue>
 </Reference>
 <Reference URI="index.html">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>p5aI+XoEmU6/dxE45BVBQS3FwCwlk5OYuEVB363OE24S13RRbPIsMKKAcU5ZrteweFAb3vX+TCJ+
-+48xveCAnQ==</DigestValue>
+<DigestValue>91jLbgfwREoD5ug7ZpGVkA1RDHYfhAYn51ri2HMe4dMJQfUWILGZlLystd7wVV/1gWaolBzJkYAw
+oMJXUfGJTA==</DigestValue>
 </Reference>
 <Reference URI="resources%2Ficon%2Ficon128.png">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
@@ -82,11 +82,11 @@ QY10fG1EWQ==</DigestValue>
 </Reference>
 </SignedInfo>
 <SignatureValue>
-H9t0Ma3YrPqy0alN+ENkJ8k3gUKwlRoZwPTn75KL7oL6Ka71o4kSjH0HV93KgM5KoTiGFex+yIiQ
-snt5WV3kvtTFwSTaVIuBPj62Bnwp5u22AzcGAgyyd5KHBiVHEv6CUPjUtaUWBhTNPGSfl8IIEJzZ
-C10jmNn/6sNzPr43rpUNchgSfKMlIDbCE75bDKlL4+qY4SkXalDEIQd49VbVSn/dkIJOT7tfajRo
-vCw2z2nbfmlYi9Lgh7kOVr28OZKmN3q5iVraMNPZ/uqxx5FscgzFRv4BQlwpsMQ1AOYxY6N1xjJ4
-ZlvZZlXh62UJysxhZdSBZIjBduzXs0YQ4zkN5w==
+OBTDA72XUSivIaod0lTM15a0pqL3VsaPLE0l0kjuaFPfCd8cqoVZUH4dIbYrpHR/q7xVzSWZYytp
+SFpl1GzSVhUrffMe4ts9enUyz2nk3wEOj0vhlHRKGXDR3o+SMlVBUdpP6+QZxRfhNcX5t9Fw+mN0
+wc4TfPmCIR7SWHgAC6eNcTnJE1VgVIag7cQ4mMcNbiDte09K6EU/oZhoHOi4QbDNItNX/SmWS/hP
+aBR8JAgIGN5lM4Ju1bHWkzAxAUskL1HPN3MEYjAZRQeoz0tlbbiRyh5yT6cfxxeEhkdoqk/ZTMAE
+ijE5+fWesYvdizye508hmkuMheFzBnxsKB2u3g==
 </SignatureValue>
 <KeyInfo>
 <X509Data>

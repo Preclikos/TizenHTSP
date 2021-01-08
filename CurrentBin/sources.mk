@@ -20,5 +20,5 @@ OBJS :=
 SUBDIRS := \
 src \
 src/htsp \
-src/htsp/socket \
+src/player \
 

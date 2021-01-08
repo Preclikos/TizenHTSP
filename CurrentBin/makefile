@@ -8,7 +8,7 @@ RM := python $(NACL_SDK_ROOT)/tools/oshelpers.py rm
 
 # All of the sources participating in the build are defined here
 -include sources.mk
--include src/htsp/socket/subdir.mk
+-include src/player/subdir.mk
 -include src/htsp/subdir.mk
 -include src/subdir.mk
 -include subdir.mk
@@ -39,7 +39,7 @@ hello_world_cpp.nmf: $(NACL_EXECUTABLE)
 
 hello_world_cpp.pexe: $(OBJS)
 	@echo 'Invoking: NaCl C++ linker'
-	pnacl-clang++ -o "hello_world_cpp.pexe" $(OBJS) -L"C:\Users\jan.husak\Downloads\hello_world_cpp\third_party\lib" -L"C:\Users\jan.husak\pepper_56/lib/pnacl/Debug" -lnacl_io -lppapi_cpp -lhts -lppapi -lpthread
+	pnacl-clang++ -o "hello_world_cpp.pexe" $(OBJS) -L"C:\Users\jan.husak\Downloads\hello_world_cpp\third_party\lib" -L"C:\Users\jan.husak\pepper_56/lib/pnacl/Debug" -lnacl_io -lnacl_player -lppapi_cpp -lhts -lppapi -lpthread
 	@echo 'Finished building: $@'
 	@echo ' '
 
