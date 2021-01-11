@@ -12,7 +12,12 @@
 #include "ppapi/cpp/var_dictionary.h"
 #include "htsp/HTSPConnection.h"
 #include "htsp/IHTSPConnectionListener.h"
+#include "player/common.h"
+#include "ppapi/utility/completion_callback_factory.h"
+#include "ppapi/utility/threading/simple_thread.h"
+#include "player/es_htsp_player_controller.h"
 
+using Samsung::NaClPlayer::Rect;
 
 class HelloWorld : public pp::Instance, public IHTSPConnectionListener {
  public:
@@ -23,9 +28,12 @@ class HelloWorld : public pp::Instance, public IHTSPConnectionListener {
    */
   explicit HelloWorld(PP_Instance instance)
       : pp::Instance(instance),
+		player_thread_(this),
+		cc_factory_(this),
+		controller(std::make_shared<EsHtspPlayerController>(this, this)),
 		htspConnection(this, *this)
   {
-
+	  player_thread_.Start();
 //htspConnection = new HtspConnection(pp_instance());
   }
 
@@ -54,10 +62,16 @@ class HelloWorld : public pp::Instance, public IHTSPConnectionListener {
 
 
 private:
+  void InitPlayer(uint32_t result);
   void DispatchMessageMessageOnSideThread(int32_t result);
   void InitNaClIO();
   int32_t count = 0;
   HTSPConnection htspConnection;
+  std::shared_ptr<EsHtspPlayerController> controller;
+  pp::SimpleThread player_thread_;
+  pp::CompletionCallbackFactory<HelloWorld> cc_factory_;
+
+  Samsung::NaClPlayer::Rect view_rect_;
 };
 
 class HelloWorldModule : public pp::Module {

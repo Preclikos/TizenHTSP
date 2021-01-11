@@ -87,7 +87,7 @@ void HTSPConnection::Register(int32_t result)
     htsmsg_t* msg = htsmsg_create_map();
     htsmsg_add_u32(msg, "subscriptionId", 10);
     htsmsg_add_u32(msg, "channelId", 136089876);
-
+    htsmsg_add_str(msg, "profile", "matroska");
     SendMessage("subscribe", msg);
 }
 

@@ -26,18 +26,27 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-
+#include "stream_demuxer.h"
 #include "nacl_player/es_data_source.h"
 #include "nacl_player/media_data_source.h"
 #include "nacl_player/media_player.h"
 #include "ppapi/cpp/instance.h"
 #include "ppapi/utility/completion_callback_factory.h"
 #include "ppapi/utility/threading/simple_thread.h"
-
+#include "nacl_player/elementary_stream_listener.h"
 #include "player_controller.h"
 #include "player_listeners.h"
 #include "common.h"
 #include "media_stream.h"
+#include "ffmpeg_demuxer.h"
+
+extern "C"
+{
+	#include "libhts/htsmsg.h"
+}
+
+using Samsung::NaClPlayer::ElementaryStream;
+using Samsung::NaClPlayer::ElementaryStreamListener;
 
 class DrmPlayReadyListener;
 
@@ -75,7 +84,9 @@ class DrmPlayReadyListener;
 /// @see class <code>Samsung::NaClPlayer::MediaPlayer</code>
 
 class EsHtspPlayerController : public PlayerController,
-    public std::enable_shared_from_this<PlayerController> {
+public Samsung::NaClPlayer::ElementaryStreamListener,
+    public std::enable_shared_from_this<PlayerController>
+	 {
  public:
   /// Creates an <code>EsDashPlayerController</code> object. NaCl Player must
   /// be initialized using the <code>InitPlayer()</code> method before a
@@ -90,8 +101,9 @@ class EsHtspPlayerController : public PlayerController,
   ///   which will be used to send messages through the communication channel.
   ///
   /// @see EsDashPlayerController::InitPlayer()
-	EsHtspPlayerController(const pp::InstanceHandle& instance)
+	EsHtspPlayerController(const pp::InstanceHandle& instance, pp::Instance* pp_instance)
       : PlayerController(),
+		pp_Instance(pp_instance),
         instance_(instance),
         cc_factory_(this),
         subtitles_visible_(false),
@@ -140,6 +152,18 @@ class EsHtspPlayerController : public PlayerController,
   void ChangeSubtitles(int32_t id) override;
   void ChangeSubtitleVisibility() override;
   PlayerState GetState() override;
+
+  void OnNeedData(int32_t bytes) override;
+  void OnEnoughData() override;
+  void OnSeekData(Samsung::NaClPlayer::TimeTicks new_position) override;
+
+  void AddData(const std::string& method, htsmsg_t* msg);
+  void Config(int32_t result, htsmsg_t* msg);
+  void OnEsPacket(
+		    StreamDemuxer::Message message,
+		    std::unique_ptr<ElementaryStreamPacket> packet);
+
+  void OnVideoConfig(const VideoConfig& video_config);
 
  private:
   /// @public
@@ -203,6 +227,7 @@ class EsHtspPlayerController : public PlayerController,
 
   void PerformWaitingOperations();
 
+  pp::Instance* pp_Instance;
   pp::InstanceHandle instance_;
   std::unique_ptr<pp::SimpleThread> player_thread_;
   pp::CompletionCallbackFactory<EsHtspPlayerController> cc_factory_;
@@ -226,11 +251,19 @@ class EsHtspPlayerController : public PlayerController,
   std::vector<VideoStream> video_representations_;
   std::vector<AudioStream> audio_representations_;
 
+  std::shared_ptr<Samsung::NaClPlayer::ElementaryStream> elementary_stream_;
+
   std::unique_ptr<Samsung::NaClPlayer::TimeTicks> waiting_seek_;
   std::array<std::unique_ptr<int32_t>,
              static_cast<size_t>(StreamType::MaxStreamTypes)>
                  waiting_representation_changes_;
 
+  void Async(int32_t result, htsmsg_t* msg);
+  int32_t init = 0;
+double duration = 0;
+double lastpts = 0;
+std::unique_ptr<StreamDemuxer> demuxer_;
+void LogPacket(int32_t result, Samsung::NaClPlayer::ESPacket* es_packet);
   class Impl;
   friend class Impl;
 };

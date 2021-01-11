@@ -107,6 +107,7 @@ class PlayerController {
   /// Provides information about <code>PlayerController</code> state.
   /// @return A current state of the player.
   virtual PlayerState GetState() = 0;
+
 };
 
 #endif  // NATIVE_PLAYER_INC_PLAYER_PLAYER_CONROLLER_H_

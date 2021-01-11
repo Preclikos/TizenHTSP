@@ -18,26 +18,23 @@
   The NaCl module handles this message and sends an echo back to JS. <br>
   JS side handles the response message and displays it.</p>
   <h2>Status: <code id="status">Loading</code></h2>
-
-  <div id="listener">
-    <!-- This embed element with type x-nacl is an anchor point, that holds a 
-    NaCl application inside an HTML web page.
-    "src" attribute points a NaCl application manifest file (*.nmf) which contains 
-    a path to binary file and some additional metadata. Nmf file is auto-generated
-    by NaCl toolchain when building a NaCl project in Samsung TizenTV SDK IDE.
-    For more information see:
-    https://developer.chrome.com/native-client/devguide/coding/application-structure#html-file-and-the-embed-element
-    https://developer.chrome.com/native-client/devguide/coding/application-structure#manifest-files .-->
-    <embed id="nacl_module" type="application/x-nacl" src="CurrentBin/hello_world_cpp.nmf"
-      width=0 height=0 />
-  </div>
-
-  <h2>NaCl messages:</h2>
-  <p id="nacl_output"> </p>
   
+  <h2>NaCl messages:</h2>
+  
+  <div id="listener">
+
+  </div>
+<p id="nacl_output"> </p>
   <script>
   var listenerDiv = document.getElementById("listener");
-  var nacl_module = document.getElementById("nacl_module");
+  
+  
+  var demo_name = 'Native Player';
+var demo_description = '';
+var nmf_path_name = 'CurrentBin/hello_world_cpp.nmf';
+var nacl_width = 240;
+var nacl_height = 180;
+  var uses_logging = true;
   
   var x = 0;
   /* Handles messages sent from NaCl app by PostMessage(). */
@@ -58,22 +55,54 @@
   function updateStatus(txt_message) {
     document.getElementById("status").innerHTML = txt_message;
   }
+ 
   
+  
+  function createNaclModule(nmf_path_name, width, height) {
+  var nacl_elem = document.createElement("embed");
+  nacl_elem.setAttribute("name", "nacl_module");
+  nacl_elem.setAttribute("id", "nacl_module");
+  nacl_elem.setAttribute("type", "application/x-nacl");
+  nacl_elem.setAttribute("src", nmf_path_name);
+  nacl_elem.setAttribute("width", width);
+  nacl_elem.setAttribute("height", height);
+  //nacl_elem.setAttribute("logs", logs_level);
+
+  //var listenerDiv = document.getElementById("listener");
+  listenerDiv.appendChild(nacl_elem);
+  
+var nacl_module = document.getElementById("nacl_module");
+
+  function handleCrash(event) {
+    updateStatus("Crashed/exited with status: " + nacl_module.exitStatus);
+  }
+
   function handleLoad(event) {
     updateStatus("Loaded");
     nacl_module.postMessage("Hello World from JS");
   }
+
+  // attach common listeners
+  //listenerDiv.addEventListener("message", handleNaclMessage, true);
+  //listenerDiv.addEventListener("crash", handleNaclCrash, true);
+  //listenerDiv.addEventListener("load", handleNaclLoad, true);
   
-  function handleCrash(event) {
-    updateStatus("Crashed/exited with status: " + nacl_module.exitStatus);
-  }
+  listenerDiv.addEventListener("message", handleMessage, true);
+  listenerDiv.addEventListener("load", handleLoad, true);
+  listenerDiv.addEventListener("crash", handleCrash, true);
+}
   
   /* Here we bind events specific for an "application/x-nacl" type embed element.
   For more info see:
   https://developer.chrome.com/native-client/devguide/coding/progress-events .*/
-  listenerDiv.addEventListener("message", handleMessage, true);
-  listenerDiv.addEventListener("load", handleLoad, true);
-  listenerDiv.addEventListener("crash", handleCrash, true);
+
+  
+  document.addEventListener("DOMContentLoaded", function() {
+  
+  createNaclModule(nmf_path_name, nacl_width, nacl_height);
+  updateStatus("Loading...");
+  
+  });
   </script>
 </body>
 </html>

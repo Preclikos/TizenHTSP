@@ -43,12 +43,17 @@
 									<listOptionValue builtIn="false" value="${NACL_SDK_ROOT}/lib/pnacl/${ConfigName}"/>
 								</option>
 								<option id="org.tizen.web.tv.sec.nacl.builder.toolchain.linker.cpp.libs.393364127" name="Libraries (-l)" superClass="org.tizen.web.tv.sec.nacl.builder.toolchain.linker.cpp.libs" useByScannerDiscovery="false" valueType="stringList">
-									<listOptionValue builtIn="false" value="nacl_io"/>
+									<listOptionValue builtIn="false" value="pthread"/>
+									<listOptionValue builtIn="false" value="avformat"/>
+									<listOptionValue builtIn="false" value="avcodec"/>
+									<listOptionValue builtIn="false" value="avutil"/>
+									<listOptionValue builtIn="false" value="glibc-compat"/>
+									<listOptionValue builtIn="false" value="c++"/>
 									<listOptionValue builtIn="false" value="nacl_player"/>
+									<listOptionValue builtIn="false" value="nacl_io"/>
+									<listOptionValue builtIn="false" value="ppapi"/>
 									<listOptionValue builtIn="false" value="ppapi_cpp"/>
 									<listOptionValue builtIn="false" value="hts"/>
-									<listOptionValue builtIn="false" value="ppapi"/>
-									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
 								<inputType id="org.tizen.web.tv.sec.nacl.builder.toolchain.linker.input.718059209" name="Linker input" superClass="org.tizen.web.tv.sec.nacl.builder.toolchain.linker.input"/>
 							</tool>
