@@ -9,23 +9,23 @@
 </Reference>
 <Reference URI="CurrentBin%2Fhello_world_cpp.pexe">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>QkyYlOFRuOm4h7jVS0YU9bzNIRYePhppdIMH/jtBo0Yrr54xcn69Ga/AWfU7cKHA6SM7X37DRd4W
-g4gviJCxYw==</DigestValue>
+<DigestValue>8Yrn8L6pNYC92vrYePFA/brMH2RswUpFRzudU9/hPTB9mcy6HxD76lUw5ibfIMKSFLz4R8s9BTHx
+0hdrjwn/TA==</DigestValue>
 </Reference>
 <Reference URI="CurrentBin%2Fhello_world_cpp_armv7.nexe">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>12EDnRrtBQOdUowizgX3UhiMfovbaiWaHE/gWyX9rrzdwRSwFh3TGMWji4FRZyuXQ+AyUwcH1DiH
-eOxOYj4beg==</DigestValue>
+<DigestValue>ubYOYA0lJasfVE0hnZ9/7V2BQsL4h4obN2hSsWnMihpe63qWlfxaOuoyOuB//m/2dTgJVitCYMVP
+zkezD9YItw==</DigestValue>
 </Reference>
 <Reference URI="CurrentBin%2Fhello_world_cpp_i686.nexe">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>61CGc9PvpWzIETVFdxDTp4ZSAuGvGe8DpTu6HjhETl1cPGOkdBGNVEzdpUD8yGd25s329/kDSSMT
-ibyaLVibhw==</DigestValue>
+<DigestValue>EXlAJPc3Fr6caHxTvk6Djk13Tv60V2NCEssuUtrSD+syapwnkgNHiIH3pquSQfTMe0oGlc88Iugf
+0EkglSAtXg==</DigestValue>
 </Reference>
 <Reference URI="CurrentBin%2Fhello_world_cpp_x86-64.nexe">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>L/Ux5BPKDkquyZadfCxDt3zVzpnMw0VsHXgC3Zk7Lbn3PilfZi7Sbk+vsjl5FMqs9jJM0vsMrOon
-axuL/2GmQQ==</DigestValue>
+<DigestValue>A8+R9mPT8ZZ3oaRCleM4IOq1jAoxZgCkufUKGT09SkWVVM4Gu92q3AEhiqpbcr/tqq5a7d+cfmGM
+BEpd7TkonQ==</DigestValue>
 </Reference>
 <Reference URI="CurrentBin%2Fnacl_clean.py">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
@@ -172,11 +172,11 @@ QY10fG1EWQ==</DigestValue>
 </Reference>
 </SignedInfo>
 <SignatureValue>
-KFlMVHItmlkyZdIDTPXaBIwO8MIgafFta2mnFxJ/DZEu6zi3ykUzDTaUQVg1db2uvW5JLwAqYpL9
-82uMAfEK8NNKVIh/I/ntN80rCMgE9DCybpkbXnBvhuWu/MNaDf3H0pUbjevGexQYAJHuKU8AAx04
-GKp9GbL4EV1dBFarolq7UD7JWLNU+CO1WSNPCwCJeL82MZZjTR8RoQNX9/tMDWd5g5rc33IHVKPB
-sOGdcFKACYaiq75tNw9Kz6f2PaOVJ+rcxOr38ITBGC/urdTcHP7JwJ1rLLLzIPLneqBjvCePUVer
-7CaEHQNxKObwqjYOdMJCzOPUwpcKCCE5tPQmPg==
+XM29KG0ueqplBDdLYyKdtgTQW3LHY9ZEgkgLYb2/+b7EzBa7Etc3MkAc9ryWRJgvrvC156Or99ME
+FvrsBdBFNHquXWw1TYYluHG8prz4cs0an2CMdIDygj421n7/r3IE7SB3GHSyeeEy0hqqBSUo80Y0
+b62/qPJSRtV+/yG4ElnXGlVI5YwVYE2L5Dzfww9zy2nQ7lKZ4jREGHeLH2oWjrMcisorb2nbCzo9
+9bajXGDdnFpRXH4SLxMyNLwk96AWVqhF8R5rHv3s+2kIm2Z3p4EMKZ11mpepxCmZ2hJOYdb7aQLr
+mjwIAdGakljTE7L5vcStGp6ME+754CsIDyQPVQ==
 </SignatureValue>
 <KeyInfo>
 <X509Data>

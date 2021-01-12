@@ -9,23 +9,23 @@
 </Reference>
 <Reference URI="CurrentBin%2Fhello_world_cpp.pexe">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>QkyYlOFRuOm4h7jVS0YU9bzNIRYePhppdIMH/jtBo0Yrr54xcn69Ga/AWfU7cKHA6SM7X37DRd4W
-g4gviJCxYw==</DigestValue>
+<DigestValue>8Yrn8L6pNYC92vrYePFA/brMH2RswUpFRzudU9/hPTB9mcy6HxD76lUw5ibfIMKSFLz4R8s9BTHx
+0hdrjwn/TA==</DigestValue>
 </Reference>
 <Reference URI="CurrentBin%2Fhello_world_cpp_armv7.nexe">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>12EDnRrtBQOdUowizgX3UhiMfovbaiWaHE/gWyX9rrzdwRSwFh3TGMWji4FRZyuXQ+AyUwcH1DiH
-eOxOYj4beg==</DigestValue>
+<DigestValue>ubYOYA0lJasfVE0hnZ9/7V2BQsL4h4obN2hSsWnMihpe63qWlfxaOuoyOuB//m/2dTgJVitCYMVP
+zkezD9YItw==</DigestValue>
 </Reference>
 <Reference URI="CurrentBin%2Fhello_world_cpp_i686.nexe">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>61CGc9PvpWzIETVFdxDTp4ZSAuGvGe8DpTu6HjhETl1cPGOkdBGNVEzdpUD8yGd25s329/kDSSMT
-ibyaLVibhw==</DigestValue>
+<DigestValue>EXlAJPc3Fr6caHxTvk6Djk13Tv60V2NCEssuUtrSD+syapwnkgNHiIH3pquSQfTMe0oGlc88Iugf
+0EkglSAtXg==</DigestValue>
 </Reference>
 <Reference URI="CurrentBin%2Fhello_world_cpp_x86-64.nexe">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>L/Ux5BPKDkquyZadfCxDt3zVzpnMw0VsHXgC3Zk7Lbn3PilfZi7Sbk+vsjl5FMqs9jJM0vsMrOon
-axuL/2GmQQ==</DigestValue>
+<DigestValue>A8+R9mPT8ZZ3oaRCleM4IOq1jAoxZgCkufUKGT09SkWVVM4Gu92q3AEhiqpbcr/tqq5a7d+cfmGM
+BEpd7TkonQ==</DigestValue>
 </Reference>
 <Reference URI="CurrentBin%2Fnacl_clean.py">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
@@ -39,8 +39,8 @@ gxg5I2VbDw==</DigestValue>
 </Reference>
 <Reference URI="author-signature.xml">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>6JmSQm31UZMM3Kn2azX2ASKMNYbKXNC+DjXfxRAG0US6bPnLgOJeyVnZg5iWMJDdnkGNYpSzCLBX
-qxaci5ds0Q==</DigestValue>
+<DigestValue>YRNvdzDntifbc9Nq80nVT81Qsib0Uztakn1DrSbZhDWkbONRd/1s3OMXg9Vnc0MDyVhv+mSyLSsR
+2/vLYLRmlg==</DigestValue>
 </Reference>
 <Reference URI="build_instructions.txt">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
@@ -177,11 +177,11 @@ GyvKX9Snig==</DigestValue>
 </Reference>
 </SignedInfo>
 <SignatureValue>
-TBbnxd7uS3UO3ATHexuBXgHuAC2bgRRYq5rYak8yeojugZUJBw+JKubBadksM6KSvlq+ubu1oDK3
-fA+pn+QGoAPoaB35wAF5BRw+4+4/uaBoS7MvPkopwf/2pRswtK3m85s974MYVFOpC8ZY6ow2nFmS
-+1rMjRABLnTnsNb1JQDiTJGH2bcEfvgGJKeTnRVMxiCvbYno5tpkRjuygo8qWlFfT4ysEntLWk1n
-qtY4Ls7W9EW1WxUtvELQybZpBy1czZZ/bAsD/sS7FNZ+wOzvpBDi3RwMA5nqTFdtCOqFRQWNdpxT
-jnzI9dQ6rV2o/LtkOwiNEFXydLBq5mNz1TR8Gg==
+uSWIYCrp8QwQtJVdDlKkmeXTjl745a8IEw3EIYQ5cMrY/N3AQY8cu6T5yLHvinZsnBtL3KqVrge3
+OoIOLPjd5p3ZgFYtzSq93by/qXUTlu0tLeOctLewYl3ZCiYPH6HukPoHUpKWpDIhNSo9TjryIhQu
+Qb25N04XmX3+rJJIBiBoW9NP2CSSRX/vz5+wOuIcMbd3PWWkPdYwgKX9iUhWLlkFolGtTx7ovagO
+xP2TDggEc/Xk88ug4QYT91mnSuME2bGFEdfHcQg1jHbUPXkh8EjhKfZ6WTYUXUhDxwn6XtKJzc/6
+xG83S75hkVXo8v7srNy6+Wbe2vVdXcMs3SyJfg==
 </SignatureValue>
 <KeyInfo>
 <X509Data>

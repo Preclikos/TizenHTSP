@@ -144,6 +144,7 @@ bool FFMpegDemuxer::Init(const InitCallback& callback,
   //LOG_DEBUG("Start, parser: %p", this);
   if (callback_dispatcher.is_null() || !callback) {
     //LOG_ERROR("ERROR: callback is null or callback_dispatcher is invalid!");
+
     return false;
   }
 
@@ -299,6 +300,7 @@ void FFMpegDemuxer::ParsingThreadFn() {
         //LOG_ERROR("Error! Packet stream index (%d) not recognized!",
                   //pkt.stream_index);
       }
+
       es_pkt = MakeESPacketFromAVPacket(&pkt);
     }
 
@@ -397,6 +399,7 @@ void FFMpegDemuxer::InitFFmpeg() {
   }
 }
 
+
 bool FFMpegDemuxer::InitStreamInfo() {
   //LOG_DEBUG("FFmpegStreamParser::InitStreamInfo");
   int ret;
@@ -413,6 +416,8 @@ bool FFMpegDemuxer::InitStreamInfo() {
       //    ret, errbuff);
       return false;
     }
+
+
 
     //LOG_DEBUG("context opened");
     context_opened_ = true;
@@ -446,10 +451,6 @@ bool FFMpegDemuxer::InitStreamInfo() {
   if (!streams_initialized_) {
     streams_initialized_ = (audio_stream_idx_ >= 0 || video_stream_idx_ >= 0);
   }
-
-  //LOG_DEBUG("DONE, parser: %p, initialized: %d, audio: %d, video: %d", this,
-  //          streams_initialized_, audio_stream_idx_ >= 0,
-  //          video_stream_idx_ >= 0);
 
   return streams_initialized_;
 }
@@ -515,7 +516,6 @@ void FFMpegDemuxer::UpdateVideoConfig() {
   AVStream* s = format_context_->streams[video_stream_idx_];
  // LOG_DEBUG("video ffmpeg duration: %lld %s", s->duration,
            // s->duration == AV_NOPTS_VALUE ? "(AV_NOPTS_VALUE)" : "");
-
   video_config_.codec_type = ConvertVideoCodec(s->codecpar->codec_id);
   switch (video_config_.codec_type) {
     case Samsung::NaClPlayer::VIDEOCODEC_TYPE_VP8:

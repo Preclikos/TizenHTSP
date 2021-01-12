@@ -13,6 +13,13 @@
 #include "elementary_stream_packet.h"
 #include "ffmpeg_demuxer.h"
 
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libavfilter/buffersink.h>
+#include <libavfilter/buffersrc.h>
+#include <libavutil/opt.h>
+#include <libavutil/pixdesc.h>
+
 #include "stream_demuxer.h"
 #include "common.h"
 
@@ -339,6 +346,39 @@ void EsHtspPlayerController::Config(int32_t result, htsmsg_t* msg){
 	    //Logger::Log(LogLevel::LEVEL_ERROR, "malformed muxpkt: 'stream'/'payload' missing");
 	    return;
 	  }
+
+	//std::vector<uint8_t> v((uint8_t*)bin, (uint8_t*)bin + binlen);
+	//packages.insert(packages.end(), v.begin(), v.end());
+/*
+	  data_source_ = std::make_shared<ESDataSource>();
+
+	  auto video_stream = make_shared<VideoElementaryStream>();
+	  data_source_->AddStream(*video_stream, this);
+
+
+	  //auto video_stream =  std::static_pointer_cast<VideoElementaryStream>(elementary_stream_);
+	  video_stream->SetVideoCodecType(Samsung::NaClPlayer::VIDEOCODEC_TYPE_H264);
+	  //video_stream->SetVideoCodecProfile(Samsung::NaClPlayer::VIDEOCODEC_PROFILE_H264_HIGH10);
+	  //video_stream->SetVideoFrameFormat(Samsung::NaClPlayer::VIDEOFRAME_FORMAT_YV12);
+	  video_stream->SetVideoFrameSize(Samsung::NaClPlayer::Size(1920, 1080));
+	  video_stream->SetFrameRate(Samsung::NaClPlayer::Rational(25, 1));
+	  video_stream->SetCodecExtraData(binlen, &bin);
+
+
+	  //data_source_->SetDuration(Samsung::NaClPlayer::TimeTicks(1));
+
+	  auto result_init = video_stream->InitializeDone();
+	  pp_Instance->PostMessage(result_init);
+
+	  elementary_stream_ =  std::static_pointer_cast<ElementaryStream>(video_stream);
+
+	  int32_t resulta = player_->AttachDataSource(*data_source_);
+
+	  //Play();
+	  pp_Instance->PostMessage(resulta);
+*/
+	  init = 1;
+	  pp_Instance->PostMessage("Set Extra");
 }
 
 
@@ -348,7 +388,7 @@ void EsHtspPlayerController::AddData(const std::string& method, htsmsg_t* msg)
 
 	if(method == "subscriptionStart")
 	{
-		//Config(0, msg);
+		Config(0, msg);
 		//htsmsg_t *msgs = htsmsg_copy(src);
 		//player_thread_->message_loop().PostWork(
 			//cc_factory_.NewCallback(
@@ -358,11 +398,11 @@ void EsHtspPlayerController::AddData(const std::string& method, htsmsg_t* msg)
 		if(method == "muxpkt")
 		{
 			//htsmsg_t *msg = htsmsg_copy(src);
-			//if(init == 0)
-			//{
-			//	pp_Instance->PostMessage("Packet before init");
-			//	return;
-			//}
+			if(init == 0)
+			{
+				pp_Instance->PostMessage("Packet before init");
+				return;
+			}
 
 			Async(0, msg);
 			//player_thread_->message_loop().PostWork(
@@ -373,7 +413,7 @@ void EsHtspPlayerController::AddData(const std::string& method, htsmsg_t* msg)
 
 void EsHtspPlayerController::Async(int32_t result, htsmsg_t* msgs){
 
-	if(init == -1000 || init == 5)
+	if(init == -1000)
 	{
 		return;
 	}
@@ -391,33 +431,39 @@ void EsHtspPlayerController::Async(int32_t result, htsmsg_t* msgs){
 
 if(idx == 1)
 {
-	uint8_t *charBuf = (uint8_t*)bin;
+	//uint8_t *charBuf = (uint8_t*)bin;
+	init++;
+
 	std::vector<uint8_t> v((uint8_t*)bin, (uint8_t*)bin + binlen);
 	demuxer_->Parse(v);
-	/*
-	Play();
-
+	//packages.insert(packages.end(), v.begin(), v.end());
+/*
+	if(init > 100)
+	{
+		pp_Instance->PostMessage("Demux write");
+		demuxer_->Parse(packages);
+		init = -1000;
+	}*/
+	//void* bin2 = malloc (binlen);
+	 //memcpy ( &bin2, bin, binlen );
 	//pp_Instance->PostMessage("Index write");
-	std::unique_ptr<Samsung::NaClPlayer::ESPacket> es_packet = MakeUnique<Samsung::NaClPlayer::ESPacket>();
+	/*
+	void *q = const_cast<void *>(bin);
+
+	std::unique_ptr<ElementaryStreamPacket> es_packet = MakeUnique<ElementaryStreamPacket>((uint8_t*)q, binlen);
 
 	double deleno = 1000000;
 
-	es_packet->buffer = bin;
-	es_packet->size = binlen;
+	//es_packet->buffer = bin;
+	//es_packet->size = binlen;
 
 	int64_t s64 = 0;
 	htsmsg_get_s64(msg, "pts", &s64);
 
 	double resultpts = (double)s64 / (double)deleno;
 	pp_Instance->PostMessage("Pts:" +std::to_string(resultpts));
-	es_packet->pts = Samsung::NaClPlayer::TimeTicks(resultpts);
-
-
-	if(lastpts > resultpts)
-	{
-		return;
-	}
-
+	//es_packet->pts = Samsung::NaClPlayer::TimeTicks(resultpts);
+	es_packet->SetPts(Samsung::NaClPlayer::TimeTicks(resultpts));
 
 	lastpts = resultpts;
 	int64_t s642 = 0;
@@ -425,22 +471,22 @@ if(idx == 1)
 
 	double resultdts = (double)s642 / (double)deleno;
 	pp_Instance->PostMessage("Dts:" +std::to_string(resultdts));
-	es_packet->dts = Samsung::NaClPlayer::TimeTicks(resultdts);
-
+	//es_packet->dts = Samsung::NaClPlayer::TimeTicks(resultdts);
+	es_packet->SetDts(Samsung::NaClPlayer::TimeTicks(resultdts));
 
 	uint32_t u32 = 0;
 	htsmsg_get_u32(msg, "duration", &u32);
 	double resultduration = (double)u32 / (double)deleno;
 	pp_Instance->PostMessage("Durr:" +std::to_string(resultduration));
-	es_packet->duration  = Samsung::NaClPlayer::TimeTicks(resultduration);
-
+	//es_packet->duration  = Samsung::NaClPlayer::TimeTicks(resultduration);
+	es_packet->SetDuration(Samsung::NaClPlayer::TimeTicks(resultduration));
 	uint32_t u32f = 0;
 	if (!htsmsg_get_u32(msg, "frametype", &u32f))
 	{
 		if(u32f == 73)
 		{
 			//pp_Instance->PostMessage("Key");
-			es_packet->is_key_frame = true;
+			es_packet->SetKeyFrame(true);//is_key_frame = true;
 		}
 	}
 
@@ -451,20 +497,23 @@ if(idx == 1)
 	//pp_Instance->PostMessage("Pack - append");
 	//pp::CompletionCallback callback = cc_factory_.NewCallback(&EsHtspPlayerController::LogPacket);
 	//std::function<void(int32_t)> DelayFunction = std::function<void(uint32_t, &EsHtspPlayerController::LogPacket)>();
-	//auto resultapp = elementary_stream_->AppendPacket(*es_packet);
-	//if(resultapp != 0)
-	//{
-	//	init = -1000;
-	//	pp_Instance->PostMessage(resultapp);
-	//}
+	auto resultapp = elementary_stream_->AppendPacket(es_packet->GetESPacket());
+	if(resultapp != 0)
+	{
+		init = -1000;
+		pp_Instance->PostMessage(resultapp);
+	}
+	if(init == 10)
+	{	Play(); }
 	//else
 	//{
 	//	init++;
 	//}
 	//pp_Instance->PostMessage("Succ"+ std::to_string(init));
-	 * */
-
+*/
 	}
+
+
 }
 void EsHtspPlayerController::OnVideoConfig(const VideoConfig& video_config)
 {
@@ -510,6 +559,7 @@ void EsHtspPlayerController::OnEsPacket(
 	{
 		pp_Instance->PostMessage(resultapp);
 	}
+	Play();
 }
 
 	void EsHtspPlayerController::LogPacket(int32_t result, Samsung::NaClPlayer::ESPacket* es_packet)
@@ -522,5 +572,6 @@ void EsHtspPlayerController::OnEsPacket(
 		 auto resultapp = elementary_stream_->AppendPacket(*es_packet);
 		pp_Instance->PostMessage(resultapp);
 	}
+
 
 

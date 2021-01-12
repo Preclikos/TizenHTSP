@@ -262,10 +262,14 @@ public Samsung::NaClPlayer::ElementaryStreamListener,
   int32_t init = 0;
 double duration = 0;
 double lastpts = 0;
+std::vector<uint8_t> packages;
+
+
 std::unique_ptr<StreamDemuxer> demuxer_;
 void LogPacket(int32_t result, Samsung::NaClPlayer::ESPacket* es_packet);
   class Impl;
   friend class Impl;
+
 };
 
 #endif  // NATIVE_PLAYER_INC_PLAYER_ES_DASH_PLAYER_ES_DASH_PLAYER_CONTROLLER_H_
