@@ -11,14 +11,6 @@
 #include "nacl_player/es_data_source.h"
 #include "nacl_player/url_data_source.h"
 #include "elementary_stream_packet.h"
-#include "ffmpeg_demuxer.h"
-
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavfilter/buffersink.h>
-#include <libavfilter/buffersrc.h>
-#include <libavutil/opt.h>
-#include <libavutil/pixdesc.h>
 
 #include "stream_demuxer.h"
 #include "common.h"
@@ -45,6 +37,7 @@ using std::shared_ptr;
 using std::unique_ptr;
 using std::vector;
 using Samsung::NaClPlayer::VideoElementaryStream;
+using Samsung::NaClPlayer::AudioElementaryStream;
 using Samsung::NaClPlayer::VideoCodec_Profile;
 using Samsung::NaClPlayer::ESPacket;
 const int64_t kMainLoopDelay = 50;  // in milliseconds
@@ -63,7 +56,7 @@ void EsHtspPlayerController::InitPlayer() {
   CleanPlayer();
   //demuxer_ = StreamDemuxer::Create(instance_handle_, demuxer_type, init_mode);
 
-  demuxer_ = MakeUnique<FFMpegDemuxer>(instance_, 512, StreamDemuxer::kVideo, StreamDemuxer::kFullInitialization);
+  //demuxer_ = MakeUnique<FFMpegDemuxer>(instance_, 512, StreamDemuxer::kVideo, StreamDemuxer::kFullInitialization);
   //demuxer_ = StreamDemuxer::Create(instance_, StreamDemuxer::kVideo, StreamDemuxer::kFullInitialization);
 
   auto es_packet_callback = [this](StreamDemuxer::Message message,
@@ -71,13 +64,13 @@ void EsHtspPlayerController::InitPlayer() {
     OnEsPacket(message, std::move(packet));
   };
 
-  demuxer_->Init(es_packet_callback, pp::MessageLoop::GetCurrent());
+  //demuxer_->Init(es_packet_callback, pp::MessageLoop::GetCurrent());
 
-  demuxer_->SetVideoConfigListener([this](
-        const VideoConfig& config) {
-      OnVideoConfig(config);
-    });
-
+  //demuxer_->SetVideoConfigListener([this](
+  //      const VideoConfig& config) {
+  //    OnVideoConfig(config);
+  //  });
+  //player_ = make_shared<MediaPlayer>(Samsung::NaClPlayer::MediaPlayer::DoNotBindPlayerToDisplay, Samsung::NaClPlayer::MediaPlayer::MediaPlayerModeD2TV);
   player_ = make_shared<MediaPlayer>();
   listeners_.player_listener =
       make_shared<MediaPlayerListener>();
@@ -278,7 +271,7 @@ void EsHtspPlayerController::Play() {
    // LOG_INFO("Play called successfully");
     state_ = PlayerState::kPlaying;
   } else {
-	  //pp_Instance->PostMessage("Failed play");
+	  //pp_Instance->PostMessage(ret);
     //LOG_ERROR("Play call failed, code: %d", ret);
   }
 }
@@ -327,7 +320,7 @@ void EsHtspPlayerController::OnNeedData(int32_t bytes)
 
 void EsHtspPlayerController::OnEnoughData()
 {
-	//pp_Instance->PostMessage("Player report OnEnoughData");
+	pp_Instance->PostMessage("Player report OnEnoughData");
 }
 
 void EsHtspPlayerController::OnSeekData(TimeTicks new_position)
@@ -336,49 +329,51 @@ void EsHtspPlayerController::OnSeekData(TimeTicks new_position)
 }
 
 void EsHtspPlayerController::Config(int32_t result, htsmsg_t* msg){
-	pp_Instance->PostMessage("Set - Start");
-	const void* bin = nullptr;
-	  size_t binlen = 0;
+	pp_Instance->PostMessage("Set - Vdeo - Start");
 
-	if ( htsmsg_get_bin(msg, "meta", &bin, &binlen))
-	  {
-		pp_Instance->PostMessage("Set - Error");
-	    //Logger::Log(LogLevel::LEVEL_ERROR, "malformed muxpkt: 'stream'/'payload' missing");
-	    return;
-	  }
+	data_source_ = std::make_shared<ESDataSource>();
 
-	//std::vector<uint8_t> v((uint8_t*)bin, (uint8_t*)bin + binlen);
-	//packages.insert(packages.end(), v.begin(), v.end());
-/*
-	  data_source_ = std::make_shared<ESDataSource>();
+	auto video_stream = make_shared<VideoElementaryStream>();
+	data_source_->AddStream(*video_stream, this);
 
-	  auto video_stream = make_shared<VideoElementaryStream>();
-	  data_source_->AddStream(*video_stream, this);
+	//auto video_stream =  std::static_pointer_cast<VideoElementaryStream>(elementary_stream_);
+	video_stream->SetVideoCodecType(Samsung::NaClPlayer::VIDEOCODEC_TYPE_H264);
+	video_stream->SetVideoCodecProfile(Samsung::NaClPlayer::VIDEOCODEC_PROFILE_H264_HIGH);
+	video_stream->SetVideoFrameFormat(Samsung::NaClPlayer::VIDEOFRAME_FORMAT_YV12);
+	video_stream->SetVideoFrameSize(Samsung::NaClPlayer::Size(1920, 1080));
+	video_stream->SetFrameRate(Samsung::NaClPlayer::Rational(25, 1));
 
+	/*
+	auto audio_stream = make_shared<AudioElementaryStream>();
+	data_source_->AddStream(*audio_stream, this);
 
-	  //auto video_stream =  std::static_pointer_cast<VideoElementaryStream>(elementary_stream_);
-	  video_stream->SetVideoCodecType(Samsung::NaClPlayer::VIDEOCODEC_TYPE_H264);
-	  //video_stream->SetVideoCodecProfile(Samsung::NaClPlayer::VIDEOCODEC_PROFILE_H264_HIGH10);
-	  //video_stream->SetVideoFrameFormat(Samsung::NaClPlayer::VIDEOFRAME_FORMAT_YV12);
-	  video_stream->SetVideoFrameSize(Samsung::NaClPlayer::Size(1920, 1080));
-	  video_stream->SetFrameRate(Samsung::NaClPlayer::Rational(25, 1));
-	  video_stream->SetCodecExtraData(binlen, &bin);
-
-
-	  //data_source_->SetDuration(Samsung::NaClPlayer::TimeTicks(1));
-
-	  auto result_init = video_stream->InitializeDone();
-	  pp_Instance->PostMessage(result_init);
-
-	  elementary_stream_ =  std::static_pointer_cast<ElementaryStream>(video_stream);
-
-	  int32_t resulta = player_->AttachDataSource(*data_source_);
-
-	  //Play();
-	  pp_Instance->PostMessage(resulta);
+	audio_stream->SetAudioCodecType(Samsung::NaClPlayer::AUDIOCODEC_TYPE_MP2);
+	audio_stream->SetSampleFormat(Samsung::NaClPlayer::SAMPLEFORMAT_S32);
+	audio_stream->SetBitsPerChannel(128000);
+	audio_stream->SetSamplesPerSecond(48000);
+	audio_stream->SetChannelLayout (Samsung::NaClPlayer::CHANNEL_LAYOUT_STEREO);
 */
-	  init = 1;
-	  pp_Instance->PostMessage("Set Extra");
+
+	auto map = htsmsg_get_map(msg, "streams");
+
+	if (htsmsg_get_bin(msg, "meta", &metabin, &metabinlen))
+	{
+		pp_Instance->PostMessage("Set - No extra");
+		video_stream->SetCodecExtraData(metabinlen, metabin);
+	}
+
+	//auto result_init_audio = audio_stream->InitializeDone();
+	auto result_init_video = video_stream->InitializeDone();
+
+
+	int32_t resulta = player_->AttachDataSource(*data_source_);
+
+	elementary_stream_video =  std::static_pointer_cast<ElementaryStream>(video_stream);
+
+	//elementary_stream_audio =  std::static_pointer_cast<ElementaryStream>(audio_stream);
+
+	init = 1;
+	pp_Instance->PostMessage("Set Extra");
 }
 
 
@@ -389,189 +384,98 @@ void EsHtspPlayerController::AddData(const std::string& method, htsmsg_t* msg)
 	if(method == "subscriptionStart")
 	{
 		Config(0, msg);
-		//htsmsg_t *msgs = htsmsg_copy(src);
-		//player_thread_->message_loop().PostWork(
-			//cc_factory_.NewCallback(
-				//&EsHtspPlayerController::Config, msgs));
 	}
 
 		if(method == "muxpkt")
 		{
-			//htsmsg_t *msg = htsmsg_copy(src);
 			if(init == 0)
 			{
 				pp_Instance->PostMessage("Packet before init");
 				return;
 			}
 
-			Async(0, msg);
-			//player_thread_->message_loop().PostWork(
-				//cc_factory_.NewCallback(
-					//&EsHtspPlayerController::Async, msg));
+			MuxPacket(msg);
 		}
 }
 
-void EsHtspPlayerController::Async(int32_t result, htsmsg_t* msgs){
-
-	if(init == -1000)
-	{
-		return;
-	}
+void EsHtspPlayerController::MuxPacket(htsmsg_t* msgs){
 	htsmsg_t *msg = htsmsg_copy(msgs);
 	const void* bin = nullptr;
-	  size_t binlen = 0;
+	size_t binlen = 0;
 
-	  uint32_t idx = 0;
+	uint32_t idx = 0;
 	if (htsmsg_get_u32(msg, "stream", &idx) || htsmsg_get_bin(msg, "payload", &bin, &binlen))
-	  {
-	    //Logger::Log(LogLevel::LEVEL_ERROR, "malformed muxpkt: 'stream'/'payload' missing");
+	{
 		pp_Instance->PostMessage("Malform");
-	    return;
-	  }
+		return;
+	}
 
-if(idx == 1)
-{
-	//uint8_t *charBuf = (uint8_t*)bin;
-	init++;
+	if(idx == 1 || idx == 2)
+	{
+		std::unique_ptr<ESPacket> es_packet = MakeUnique<ESPacket>();
 
-	std::vector<uint8_t> v((uint8_t*)bin, (uint8_t*)bin + binlen);
-	demuxer_->Parse(v);
-	//packages.insert(packages.end(), v.begin(), v.end());
+		es_packet->buffer = bin;
+		es_packet->size = binlen;
+
+		double deleno = 1000000;
+
+		int64_t s64 = 0;
+		htsmsg_get_s64(msg, "pts", &s64);
+
+		double resultpts = (double)s64 / (double)deleno;
+		//pp_Instance->PostMessage("Pts:" +std::to_string(resultpts));
+		//es_packet->pts = Samsung::NaClPlayer::TimeTicks(resultpts);
+		es_packet->pts = Samsung::NaClPlayer::TimeTicks(resultpts);
 /*
-	if(init > 100)
-	{
-		pp_Instance->PostMessage("Demux write");
-		demuxer_->Parse(packages);
-		init = -1000;
-	}*/
-	//void* bin2 = malloc (binlen);
-	 //memcpy ( &bin2, bin, binlen );
-	//pp_Instance->PostMessage("Index write");
-	/*
-	void *q = const_cast<void *>(bin);
+		int64_t s642 = 0;
+		htsmsg_get_s64(msg, "dts", &s642);
 
-	std::unique_ptr<ElementaryStreamPacket> es_packet = MakeUnique<ElementaryStreamPacket>((uint8_t*)q, binlen);
+		double resultdts = (double)s642 / (double)deleno;
+		//pp_Instance->PostMessage("Dts:" +std::to_string(resultdts));
+		es_packet->dts = Samsung::NaClPlayer::TimeTicks(resultdts);
 
-	double deleno = 1000000;
+		uint32_t u32 = 0;
+		htsmsg_get_u32(msg, "duration", &u32);
+		double resultduration = (double)u32 / (double)deleno;
+		//pp_Instance->PostMessage("Durr:" +std::to_string(resultduration));
+		es_packet->duration  =Samsung::NaClPlayer::TimeTicks(resultduration);
 
-	//es_packet->buffer = bin;
-	//es_packet->size = binlen;
 
-	int64_t s64 = 0;
-	htsmsg_get_s64(msg, "pts", &s64);
-
-	double resultpts = (double)s64 / (double)deleno;
-	pp_Instance->PostMessage("Pts:" +std::to_string(resultpts));
-	//es_packet->pts = Samsung::NaClPlayer::TimeTicks(resultpts);
-	es_packet->SetPts(Samsung::NaClPlayer::TimeTicks(resultpts));
-
-	lastpts = resultpts;
-	int64_t s642 = 0;
-	htsmsg_get_s64(msg, "dts", &s642);
-
-	double resultdts = (double)s642 / (double)deleno;
-	pp_Instance->PostMessage("Dts:" +std::to_string(resultdts));
-	//es_packet->dts = Samsung::NaClPlayer::TimeTicks(resultdts);
-	es_packet->SetDts(Samsung::NaClPlayer::TimeTicks(resultdts));
-
-	uint32_t u32 = 0;
-	htsmsg_get_u32(msg, "duration", &u32);
-	double resultduration = (double)u32 / (double)deleno;
-	pp_Instance->PostMessage("Durr:" +std::to_string(resultduration));
-	//es_packet->duration  = Samsung::NaClPlayer::TimeTicks(resultduration);
-	es_packet->SetDuration(Samsung::NaClPlayer::TimeTicks(resultduration));
-	uint32_t u32f = 0;
-	if (!htsmsg_get_u32(msg, "frametype", &u32f))
-	{
-		if(u32f == 73)
+		uint32_t u32f = 0;
+		if (!htsmsg_get_u32(msg, "frametype", &u32f))
 		{
-			//pp_Instance->PostMessage("Key");
-			es_packet->SetKeyFrame(true);//is_key_frame = true;
+			if(u32f == 73)
+			{
+				es_packet->is_key_frame = true;
+				//pp_Instance->PostMessage("Key");
+			}
 		}
-	}
-
-	//pp_Instance->PostMessage("Dur - calc");
-	duration = duration + ((double)u32 / deleno);
-	//pp_Instance->PostMessage("Dur - set");
-	data_source_->SetDuration(Samsung::NaClPlayer::TimeTicks(20));
-	//pp_Instance->PostMessage("Pack - append");
-	//pp::CompletionCallback callback = cc_factory_.NewCallback(&EsHtspPlayerController::LogPacket);
-	//std::function<void(int32_t)> DelayFunction = std::function<void(uint32_t, &EsHtspPlayerController::LogPacket)>();
-	auto resultapp = elementary_stream_->AppendPacket(es_packet->GetESPacket());
-	if(resultapp != 0)
-	{
-		init = -1000;
-		pp_Instance->PostMessage(resultapp);
-	}
-	if(init == 10)
-	{	Play(); }
-	//else
-	//{
-	//	init++;
-	//}
-	//pp_Instance->PostMessage("Succ"+ std::to_string(init));
 */
-	}
-
-
-}
-void EsHtspPlayerController::OnVideoConfig(const VideoConfig& video_config)
-{
-	  data_source_ = std::make_shared<ESDataSource>();
-
-	  auto video_stream = make_shared<VideoElementaryStream>();
-	  data_source_->AddStream(*video_stream, this);
-
-
-	  //auto video_stream =  std::static_pointer_cast<VideoElementaryStream>(elementary_stream_);
-	  video_stream->SetVideoCodecType(video_config.codec_type);
-	  video_stream->SetVideoCodecProfile(video_config.codec_profile);
-	  video_stream->SetVideoFrameFormat(video_config.frame_format);
-	  video_stream->SetVideoFrameSize(video_config.size);
-	  video_stream->SetFrameRate(video_config.frame_rate);
-	  video_stream->SetCodecExtraData(video_config.extra_data.size(), &video_config.extra_data.front());
-
-
-	  //data_source_->SetDuration(Samsung::NaClPlayer::TimeTicks(1));
-
-	  auto result_init = video_stream->InitializeDone();
-	  pp_Instance->PostMessage(result_init);
-
-	  elementary_stream_ =  std::static_pointer_cast<ElementaryStream>(video_stream);
-
-	  int32_t resulta = player_->AttachDataSource(*data_source_);
-
-	  //Play();
-	  pp_Instance->PostMessage(resulta);
-	  pp_Instance->PostMessage("Set");
-	  //init = 1;
-
-}
-
-void EsHtspPlayerController::OnEsPacket(
-    StreamDemuxer::Message message,
-    std::unique_ptr<ElementaryStreamPacket> packet) {
-
-	//pp_Instance->PostMessage("Es Packet");
-	auto resultapp = elementary_stream_->AppendPacket(packet->GetESPacket());
-
-	if(resultapp != 0)
-	{
-		pp_Instance->PostMessage(resultapp);
-	}
-	Play();
-}
-
-	void EsHtspPlayerController::LogPacket(int32_t result, Samsung::NaClPlayer::ESPacket* es_packet)
-	{
-		if(init == 1)
+		//pp_Instance->PostMessage("Pack - append");
+		Play();
+		if(idx == 1)
 		{
-			init = 2;
-			return;
+			auto resultapp = elementary_stream_video->AppendPacket(*es_packet);
+			if(resultapp != 0)
+			{
+				pp_Instance->PostMessage(resultapp);
+			}
 		}
-		 auto resultapp = elementary_stream_->AppendPacket(*es_packet);
-		pp_Instance->PostMessage(resultapp);
+		/*
+		if(idx == 2)
+		{
+			auto resultapp = elementary_stream_audio->AppendPacket(*es_packet);
+			if(resultapp != 0)
+			{
+				pp_Instance->PostMessage(resultapp);
+			}
+		}*/
 	}
+}
+
+
+
+
 
 
 

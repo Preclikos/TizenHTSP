@@ -38,7 +38,7 @@
 #include "player_listeners.h"
 #include "common.h"
 #include "media_stream.h"
-#include "ffmpeg_demuxer.h"
+//#include "ffmpeg_demuxer.h"
 
 extern "C"
 {
@@ -251,22 +251,20 @@ public Samsung::NaClPlayer::ElementaryStreamListener,
   std::vector<VideoStream> video_representations_;
   std::vector<AudioStream> audio_representations_;
 
-  std::shared_ptr<Samsung::NaClPlayer::ElementaryStream> elementary_stream_;
+  std::shared_ptr<Samsung::NaClPlayer::ElementaryStream> elementary_stream_video;
+  std::shared_ptr<Samsung::NaClPlayer::ElementaryStream> elementary_stream_audio;
+
+  const void* metabin;
+  size_t metabinlen = 0;
 
   std::unique_ptr<Samsung::NaClPlayer::TimeTicks> waiting_seek_;
   std::array<std::unique_ptr<int32_t>,
              static_cast<size_t>(StreamType::MaxStreamTypes)>
                  waiting_representation_changes_;
 
-  void Async(int32_t result, htsmsg_t* msg);
+  void MuxPacket(htsmsg_t* msg);
   int32_t init = 0;
-double duration = 0;
-double lastpts = 0;
-std::vector<uint8_t> packages;
 
-
-std::unique_ptr<StreamDemuxer> demuxer_;
-void LogPacket(int32_t result, Samsung::NaClPlayer::ESPacket* es_packet);
   class Impl;
   friend class Impl;
 

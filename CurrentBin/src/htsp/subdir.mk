@@ -14,7 +14,7 @@ OBJS += \
 src/htsp/%.po: ../src/htsp/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: NaCl C++ compiler'
-	pnacl-clang++ -I"C:\Users\jan.husak\pepper_63/include" -I"C:\Users\jan.husak\Downloads\hello_world_cpp\third_party\include" -c -std=gnu++0x -g -o "$@" "$<"
+	pnacl-clang++ -I"C:\Users\jan.husak\pepper_47/include" -I"C:\Users\jan.husak\Downloads\hello_world_cpp\third_party\include" -c -std=gnu++0x -g -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
