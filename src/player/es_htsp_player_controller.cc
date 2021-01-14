@@ -410,7 +410,7 @@ void EsHtspPlayerController::MuxPacket(htsmsg_t* msgs){
 		return;
 	}
 
-	if(idx == 1 || idx == 2)
+	if(idx == 1)
 	{
 		std::unique_ptr<ESPacket> es_packet = MakeUnique<ESPacket>();
 
@@ -423,10 +423,10 @@ void EsHtspPlayerController::MuxPacket(htsmsg_t* msgs){
 		htsmsg_get_s64(msg, "pts", &s64);
 
 		double resultpts = (double)s64 / (double)deleno;
-		//pp_Instance->PostMessage("Pts:" +std::to_string(resultpts));
+		pp_Instance->PostMessage("pts:" +std::to_string(resultpts));
 		//es_packet->pts = Samsung::NaClPlayer::TimeTicks(resultpts);
 		es_packet->pts = Samsung::NaClPlayer::TimeTicks(resultpts);
-/*
+
 		int64_t s642 = 0;
 		htsmsg_get_s64(msg, "dts", &s642);
 
@@ -450,7 +450,7 @@ void EsHtspPlayerController::MuxPacket(htsmsg_t* msgs){
 				//pp_Instance->PostMessage("Key");
 			}
 		}
-*/
+
 		//pp_Instance->PostMessage("Pack - append");
 		Play();
 		if(idx == 1)
@@ -458,7 +458,7 @@ void EsHtspPlayerController::MuxPacket(htsmsg_t* msgs){
 			auto resultapp = elementary_stream_video->AppendPacket(*es_packet);
 			if(resultapp != 0)
 			{
-				pp_Instance->PostMessage(resultapp);
+				pp_Instance->PostMessage(std::to_string(resultapp) + "-" + std::to_string(init));
 			}
 		}
 		/*
