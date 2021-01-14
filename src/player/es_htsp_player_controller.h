@@ -38,7 +38,7 @@
 #include "player_listeners.h"
 #include "common.h"
 #include "media_stream.h"
-//#include "ffmpeg_demuxer.h"
+#include "ffmpeg_demuxer.h"
 
 extern "C"
 {
@@ -264,7 +264,11 @@ public Samsung::NaClPlayer::ElementaryStreamListener,
 
   void MuxPacket(htsmsg_t* msg);
   int32_t init = 0;
+  int32_t init_packets = 0;
+  int32_t key = 0;
 
+  std::vector<uint8_t> packages;
+  std::unique_ptr<StreamDemuxer> demuxer_;
   class Impl;
   friend class Impl;
 

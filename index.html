@@ -6,7 +6,14 @@
   <meta http-equiv="Expires" content="-1">
 
   <title> NaCl Hello World in C++ </title>
-
+<style>
+#a1 {
+    position:absolute;
+    z-index: 300;
+    right:0;
+    top:40px;
+}
+</style>
 </head>
 <body bgcolor="white">
   <h1> Hello World NaCl application in C++ </h1>
@@ -24,8 +31,10 @@
   <div id="listener">
 
   </div>
+  <div id="a1"></div>
 <p id="nacl_output"> </p>
   <script>
+  var ptsDiv = document.getElementById("a1");
   var listenerDiv = document.getElementById("listener");
   
   
@@ -37,8 +46,19 @@ var nacl_height = 480;
   var uses_logging = true;
   
   var x = 0;
+  var b = 0;
   /* Handles messages sent from NaCl app by PostMessage(). */
   function handleMessage(message) {
+  if(typeof message.data === 'string' && message.data.includes("pts"))
+  {
+  if(b < 50)
+  {
+  	document.getElementById("a1").innerHTML += message.data +"<br />";
+  	b++;
+  	}
+  }
+  else
+  {
   if(x < 30)
   {
   	document.getElementById("nacl_output").innerHTML += message.data +"<br />";
@@ -49,6 +69,7 @@ var nacl_height = 480;
       x = 0;
   }
   x++;
+  }
   }
   
   /* An utility function. */

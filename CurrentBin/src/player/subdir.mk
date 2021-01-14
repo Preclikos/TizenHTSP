@@ -6,11 +6,13 @@
 CC_SRCS += \
 ../src/player/elementary_stream_packet.cc \
 ../src/player/es_htsp_player_controller.cc \
+../src/player/ffmpeg_demuxer.cc \
 ../src/player/player_listeners.cc 
 
 OBJS += \
 ./src/player/elementary_stream_packet.po \
 ./src/player/es_htsp_player_controller.po \
+./src/player/ffmpeg_demuxer.po \
 ./src/player/player_listeners.po 
 
 
