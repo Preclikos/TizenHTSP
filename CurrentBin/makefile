@@ -39,7 +39,7 @@ hello_world_cpp.nmf: $(NACL_EXECUTABLE)
 
 hello_world_cpp.pexe: $(OBJS)
 	@echo 'Invoking: NaCl C++ linker'
-	pnacl-clang++ -o "hello_world_cpp.pexe" $(OBJS) -L"C:\Users\jan.husak\Downloads\hello_world_cpp\third_party\lib" -L"C:\Users\jan.husak\pepper_47/lib/pnacl/Debug" -lpthread -lnacl_player -lnacl_io -lppapi -lppapi_cpp -lhts
+	pnacl-clang++ -o "hello_world_cpp.pexe" $(OBJS) -L"C:\Users\jan.husak\Downloads\hello_world_cpp\third_party\lib" -L"C:\Users\jan.husak\pepper_47/lib/pnacl/Debug" -lpthread -lavformat -lavcodec -lavutil -lglibc-compat -lc++ -lnacl_player -lnacl_io -lppapi -lppapi_cpp -lhts
 	@echo 'Finished building: $@'
 	@echo ' '
 

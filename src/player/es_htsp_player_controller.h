@@ -42,7 +42,9 @@
  #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-//#include "ffmpeg_demuxer.h"
+#include "ffmpeg_demuxer.h"
+#include "loader.h"
+#include "IHttpDataListener.h"
 
 extern "C"
 {
@@ -89,6 +91,7 @@ class DrmPlayReadyListener;
 
 class EsHtspPlayerController : public PlayerController,
 public Samsung::NaClPlayer::ElementaryStreamListener,
+public IHttpDataListener,
     public std::enable_shared_from_this<PlayerController>
 	 {
  public:
@@ -145,6 +148,8 @@ public Samsung::NaClPlayer::ElementaryStreamListener,
   /// @see EsDashPlayerController::EsDashPlayerController()
   /// @see MessageSender::ShowSubtitles()
   void InitPlayer();
+
+  void AppendDataBytes(const char* buffer, int32_t num_bytes) override;
 
   // Overloaded methods defined by PlayerController, don't have to be commented
   void Play() override;
@@ -275,7 +280,8 @@ public Samsung::NaClPlayer::ElementaryStreamListener,
 
   class Impl;
   friend class Impl;
-
+  std::unique_ptr<StreamDemuxer> demuxer_;
+  URLLoaderHandler* url_loader;
 };
 
 #endif  // NATIVE_PLAYER_INC_PLAYER_ES_DASH_PLAYER_ES_DASH_PLAYER_CONTROLLER_H_

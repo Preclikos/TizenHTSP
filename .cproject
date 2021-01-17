@@ -27,7 +27,6 @@
 							<tool id="org.tizen.web.tv.sec.nacl.builder.toolchain.debug.toolchain.compiler.cpp.1709254415" name="NaCl C++ compiler" superClass="org.tizen.web.tv.sec.nacl.builder.toolchain.debug.toolchain.compiler.cpp">
 								<option id="org.tizen.web.tv.sec.nacl.builder.toolchain.compiler.include.1627368304" name="Include paths (-I)" superClass="org.tizen.web.tv.sec.nacl.builder.toolchain.compiler.include" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="${NACL_SDK_ROOT}/include"/>
-									<listOptionValue builtIn="false" value="${NACL_SDK_ROOT}/include/newlib"/>
 									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/third_party/include}"/>
 								</option>
 								<option id="org.tizen.web.tv.sec.nacl.builder.toolchain.compiler.cpp.other.1945540779" name="Other options" superClass="org.tizen.web.tv.sec.nacl.builder.toolchain.compiler.cpp.other" useByScannerDiscovery="true" valueType="stringList">
@@ -45,6 +44,11 @@
 								</option>
 								<option id="org.tizen.web.tv.sec.nacl.builder.toolchain.linker.cpp.libs.393364127" name="Libraries (-l)" superClass="org.tizen.web.tv.sec.nacl.builder.toolchain.linker.cpp.libs" useByScannerDiscovery="false" valueType="stringList">
 									<listOptionValue builtIn="false" value="pthread"/>
+									<listOptionValue builtIn="false" value="avformat"/>
+									<listOptionValue builtIn="false" value="avcodec"/>
+									<listOptionValue builtIn="false" value="avutil"/>
+									<listOptionValue builtIn="false" value="glibc-compat"/>
+									<listOptionValue builtIn="false" value="c++"/>
 									<listOptionValue builtIn="false" value="nacl_player"/>
 									<listOptionValue builtIn="false" value="nacl_io"/>
 									<listOptionValue builtIn="false" value="ppapi"/>

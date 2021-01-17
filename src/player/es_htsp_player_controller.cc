@@ -61,7 +61,7 @@ void EsHtspPlayerController::InitPlayer() {
 
   Parser = AvcParser();
 
-  //demuxer_ = MakeUnique<FFMpegDemuxer>(instance_, 512, StreamDemuxer::kVideo, StreamDemuxer::kFullInitialization);
+  demuxer_ = MakeUnique<FFMpegDemuxer>(instance_, 512, StreamDemuxer::kVideo, StreamDemuxer::kFullInitialization);
   //demuxer_ = StreamDemuxer::Create(instance_, StreamDemuxer::kVideo, StreamDemuxer::kFullInitialization);
 
   auto es_packet_callback = [this](StreamDemuxer::Message message,
@@ -69,12 +69,12 @@ void EsHtspPlayerController::InitPlayer() {
     OnEsPacket(message, std::move(packet));
   };
 
-  //demuxer_->Init(es_packet_callback, pp::MessageLoop::GetCurrent());
+  demuxer_->Init(es_packet_callback, pp::MessageLoop::GetCurrent());
 
-  //demuxer_->SetVideoConfigListener([this](
-  //      const VideoConfig& config) {
-  //    OnVideoConfig(config);
-  //  });
+  demuxer_->SetVideoConfigListener([this](
+        const VideoConfig& config) {
+      OnVideoConfig(config);
+    });
   //player_ = make_shared<MediaPlayer>(Samsung::NaClPlayer::MediaPlayer::DoNotBindPlayerToDisplay, Samsung::NaClPlayer::MediaPlayer::MediaPlayerModeD2TV);
   player_ = make_shared<MediaPlayer>();
   listeners_.player_listener =
@@ -123,6 +123,11 @@ void EsHtspPlayerController::InitPlayer() {
 
   //Play();
   //init = 1;
+
+  auto urlhandle = URLLoaderHandler::Create(pp_Instance, this, "http://192.168.1.230:9981/stream/channelid/136089876?profile=pass");
+
+  urlhandle->Start();
+
 }
 void EsHtspPlayerController::InitializeSubtitles(const std::string& subtitle,
                                                  const std::string& encoding) {}
@@ -159,6 +164,12 @@ void EsHtspPlayerController::ChangeRepresentation(StreamType stream_type,
 
 void EsHtspPlayerController::UpdateStreamsBuffer(int32_t) {
 
+}
+
+void EsHtspPlayerController::AppendDataBytes(const char* buffer, int32_t num_bytes)
+{
+	std::vector<uint8_t> v(buffer, buffer+num_bytes);
+	demuxer_->Parse(v);
 }
 
 void EsHtspPlayerController::SetViewRect(const Rect& view_rect) {
@@ -389,7 +400,7 @@ void EsHtspPlayerController::Config(int32_t result, htsmsg_t* msg){
 void EsHtspPlayerController::AddData(const std::string& method, htsmsg_t* msg)
 {
 
-	if(method == "subscriptionStart")
+	/*if(method == "subscriptionStart")
 	{
 		Config(0, msg);
 	}
@@ -403,7 +414,7 @@ void EsHtspPlayerController::AddData(const std::string& method, htsmsg_t* msg)
 			}
 
 			MuxPacket(msg);
-		}
+		}*/
 }
 
 void EsHtspPlayerController::MuxPacket(htsmsg_t* msgs){
@@ -422,14 +433,6 @@ void EsHtspPlayerController::MuxPacket(htsmsg_t* msgs){
 	{
 
 		std::unique_ptr<ESPacket> es_packet = MakeUnique<ESPacket>();
-
-		init++;
-		if(init < 50)
-		{
-			return;
-		}
-
-
 
 		double deleno = 1000000;
 
@@ -491,9 +494,10 @@ void EsHtspPlayerController::MuxPacket(htsmsg_t* msgs){
 			auto resultapp = elementary_stream_video->AppendPacket(*es_packet);
 			if(resultapp != 0)
 			{
-				//pp_Instance->PostMessage(std::to_string(resultapp) + "-" + std::to_string(init));
+				pp_Instance->PostMessage(std::to_string(resultapp) + "-" + std::to_string(init));
 			}
 		}
+		init++;
 		/*
 		if(idx == 2)
 		{
@@ -506,9 +510,53 @@ void EsHtspPlayerController::MuxPacket(htsmsg_t* msgs){
 	}
 }
 
+void EsHtspPlayerController::OnVideoConfig(const VideoConfig& video_config)
+{
+	  data_source_ = std::make_shared<ESDataSource>();
+
+	  auto video_stream = make_shared<VideoElementaryStream>();
+	  data_source_->AddStream(*video_stream, this);
 
 
+	  //auto video_stream =  std::static_pointer_cast<VideoElementaryStream>(elementary_stream_);
+	  video_stream->SetVideoCodecType(video_config.codec_type);
+	  video_stream->SetVideoCodecProfile(video_config.codec_profile);
+	  video_stream->SetVideoFrameFormat(video_config.frame_format);
+	  video_stream->SetVideoFrameSize(video_config.size);
+	  video_stream->SetFrameRate(video_config.frame_rate);
+	  video_stream->SetCodecExtraData(video_config.extra_data.size(), &video_config.extra_data.front());
 
 
+	  //data_source_->SetDuration(Samsung::NaClPlayer::TimeTicks(1));
+
+	  auto result_init = video_stream->InitializeDone();
+	  pp_Instance->PostMessage(result_init);
+
+	  elementary_stream_video =  std::static_pointer_cast<ElementaryStream>(video_stream);
+
+	  int32_t resulta = player_->AttachDataSource(*data_source_);
+
+	  //Play();
+	  pp_Instance->PostMessage(resulta);
+	  pp_Instance->PostMessage("Set");
+
+ }
+
+
+void EsHtspPlayerController::OnEsPacket(
+    StreamDemuxer::Message message,
+    std::unique_ptr<ElementaryStreamPacket> packet) {
+	auto packet_es = packet->GetESPacket();
+	pp_Instance->PostMessage("pts :" +std::to_string(packet_es.pts));
+	//pp_Instance->PostMessage("Es Packet");
+	auto resultapp = elementary_stream_video->AppendPacket(packet_es);
+
+	if(resultapp != 0)
+	{
+		pp_Instance->PostMessage(std::to_string(resultapp) + " - " + std::to_string(init));
+	}
+	init++;
+	Play();
+}
 
 
