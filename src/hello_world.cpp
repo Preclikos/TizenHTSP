@@ -5,6 +5,7 @@
 #include <sstream>
 #include <iostream>
 #include <malloc.h>
+#include "loader.h"
 
 extern "C"
 {
@@ -25,6 +26,10 @@ bool HelloWorld::Init(uint32_t argc, const char** argn, const char** argv) {
 	  player_thread_.message_loop().PostWork(
 	    cc_factory_.NewCallback(
 	        &HelloWorld::InitPlayer));
+
+	  auto loader = URLLoaderHandler::Create(this, "http://192.168.1.230:9981/stream/channelid/136089876?profile=pass");
+
+	  loader->Start();
 
 	return true;
 }

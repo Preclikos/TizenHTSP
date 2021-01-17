@@ -54,7 +54,6 @@ void MediaBufferingListener::OnBufferingStart() {
 
 void MediaBufferingListener::OnBufferingProgress(uint32_t percent) {
   //LOG_DEBUG("Event: Buffering progress: %d %%.", percent);
-
 }
 
 void MediaBufferingListener::OnBufferingComplete() {

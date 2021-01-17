@@ -38,6 +38,10 @@
 #include "player_listeners.h"
 #include "common.h"
 #include "media_stream.h"
+#include "parser_avc.h"
+ #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 //#include "ffmpeg_demuxer.h"
 
 extern "C"
@@ -164,7 +168,6 @@ public Samsung::NaClPlayer::ElementaryStreamListener,
 		    std::unique_ptr<ElementaryStreamPacket> packet);
 
   void OnVideoConfig(const VideoConfig& video_config);
-
  private:
   /// @public
   /// Checks every stream if there is enough data buffered. If not, initiates
@@ -257,6 +260,9 @@ public Samsung::NaClPlayer::ElementaryStreamListener,
   const void* metabin;
   size_t metabinlen = 0;
 
+  const void* firstbin;
+  size_t firstbinlen = 0;
+
   std::unique_ptr<Samsung::NaClPlayer::TimeTicks> waiting_seek_;
   std::array<std::unique_ptr<int32_t>,
              static_cast<size_t>(StreamType::MaxStreamTypes)>
@@ -264,6 +270,8 @@ public Samsung::NaClPlayer::ElementaryStreamListener,
 
   void MuxPacket(htsmsg_t* msg);
   int32_t init = 0;
+
+  AvcParser Parser;
 
   class Impl;
   friend class Impl;

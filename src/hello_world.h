@@ -72,6 +72,7 @@ private:
   pp::CompletionCallbackFactory<HelloWorld> cc_factory_;
 
   Samsung::NaClPlayer::Rect view_rect_;
+
 };
 
 class HelloWorldModule : public pp::Module {
