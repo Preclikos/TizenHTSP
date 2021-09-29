@@ -1,0 +1,11 @@
+eclipse.preferences.version=1
+environment/project/org.tizen.web.tv.sec.nacl.builder.toolchain.debug.1277919959/PNACLPYTHON/delimiter=\:
+environment/project/org.tizen.web.tv.sec.nacl.builder.toolchain.debug.1277919959/PNACLPYTHON/operation=append
+environment/project/org.tizen.web.tv.sec.nacl.builder.toolchain.debug.1277919959/PNACLPYTHON/value=/usr/bin/python2
+environment/project/org.tizen.web.tv.sec.nacl.builder.toolchain.debug.1277919959/append=true
+environment/project/org.tizen.web.tv.sec.nacl.builder.toolchain.debug.1277919959/appendContributed=true
+environment/project/org.tizen.web.tv.sec.nacl.builder.toolchain.debug.2074020510/PNACLPYTHON/delimiter=\:
+environment/project/org.tizen.web.tv.sec.nacl.builder.toolchain.debug.2074020510/PNACLPYTHON/operation=append
+environment/project/org.tizen.web.tv.sec.nacl.builder.toolchain.debug.2074020510/PNACLPYTHON/value=/usr/bin/python2
+environment/project/org.tizen.web.tv.sec.nacl.builder.toolchain.debug.2074020510/append=true
+environment/project/org.tizen.web.tv.sec.nacl.builder.toolchain.debug.2074020510/appendContributed=true

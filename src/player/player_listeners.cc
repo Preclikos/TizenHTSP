@@ -16,7 +16,7 @@
  *
  * @author Tomasz Borkowski
 */
-
+#include "common.h"
 #include "player_listeners.h"
 
 using Samsung::NaClPlayer::TimeTicks;
@@ -45,23 +45,23 @@ void MediaPlayerListener::OnEnded() {
 }
 
 void MediaPlayerListener::OnError(MediaPlayerError error) {
-  //LOG_ERROR("Event: Error occurred. Error no: %d.", error);
+  LOG_ERROR("Event: Error occurred. Error no: %d.", error);
 }
 
 void MediaBufferingListener::OnBufferingStart() {
-  //LOG_INFO("Event: Buffering started, wait for the end.");
+  LOG_INFO("Event: Buffering started, wait for the end.");
 }
 
 void MediaBufferingListener::OnBufferingProgress(uint32_t percent) {
-  //LOG_DEBUG("Event: Buffering progress: %d %%.", percent);
+	LOG_INFO("Event: Buffering progress: %d %%.", percent);
 }
 
 void MediaBufferingListener::OnBufferingComplete() {
-  //LOG_INFO("Event: Buffering complete! Now you may play.");
+	LOG_INFO("Event: Buffering complete! Now you may play.");
   //if (auto message_sender = message_sender_.lock()) {
   //  message_sender->BufferingCompleted();
   //}
-  //if (auto player_controller = player_controller_.lock()) {
-   // player_controller->PostTextTrackInfo();
-  //}
+  if (auto player_controller = player_controller_.lock()) {
+	  player_controller->Play();
+  }
 }

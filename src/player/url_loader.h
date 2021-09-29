@@ -11,6 +11,7 @@
 #include "ppapi/cpp/url_loader.h"
 #include "ppapi/cpp/url_request_info.h"
 #include "ppapi/utility/completion_callback_factory.h"
+#include "url_loader_listener.h"
 #define READ_BUFFER_SIZE 32768
 
 // URLLoaderHandler is used to download data from |url|. When download is
@@ -35,14 +36,14 @@ class URLLoaderHandler {
   // URLLoaderHandler objects shall be created only on the heap (they
   // self-destroy when all data is in).
   static URLLoaderHandler* Create(pp::Instance* instance_,
-                                  const std::string& url);
+                                  const std::string& url, IURLLoaderHandlerListener& connListener);
   // Initiates page (URL) download.
   void Start();
 
  private:
-  URLLoaderHandler(pp::Instance* instance_, const std::string& url);
+  URLLoaderHandler(pp::Instance* instance_, const std::string& url, IURLLoaderHandlerListener& connListener);
   ~URLLoaderHandler();
-
+  IURLLoaderHandlerListener& m_connListener;
   // Callback for the pp::URLLoader::Open().
   // Called by pp::URLLoader when response headers are received or when an
   // error occurs (in response to the call of pp::URLLoader::Open()).

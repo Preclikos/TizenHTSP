@@ -16,10 +16,11 @@
 #include "ppapi/utility/completion_callback_factory.h"
 #include "ppapi/utility/threading/simple_thread.h"
 #include "player/es_htsp_player_controller.h"
+#include "player/url_loader_listener.h"
 
 using Samsung::NaClPlayer::Rect;
 
-class HelloWorld : public pp::Instance, public IHTSPConnectionListener {
+class HelloWorld : public pp::Instance, public IHTSPConnectionListener, public IURLLoaderHandlerListener {
  public:
   /**
    * Your constructor needs to call the base class <code>pp::Instance(PP_Instance)</code>
@@ -59,7 +60,7 @@ class HelloWorld : public pp::Instance, public IHTSPConnectionListener {
   void ConnectionStateChange(const std::string& connectionString,
                              //PVR_CONNECTION_STATE newState,
                              const std::string& message) override;
-
+  bool ReceiveData(const char* buffer, int32_t num_bytes) override;
 
 private:
   void InitPlayer(uint32_t result);

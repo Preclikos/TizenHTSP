@@ -13,17 +13,29 @@
     right:0;
     top:40px;
 }
-</style>
+    body {
+      background-color: white;
+      margin: 25px;
+    }
+
+    code {
+      font: 110% consolas, monospace;
+    }
+
+    h2 {
+      font-size: 135%;
+    }
+
+    p {
+      font-size: 120%;
+    }
+
+    textarea {
+      font-size: 120%;
+    }
+  </style>
 </head>
-<body bgcolor="white">
-  <h1> Hello World NaCl application in C++ </h1>
-  <h2>Description: </h2>
-  <p>This is an example of a Hello World NaCl application implemented in C++.<br>
-  The only difference from "NaCl Hello World in C" is in the source file, 
-  nmf file name and nmf content.<br>
-  It launches a NaCl module and posts "Hello World from JS" to it. <br>
-  The NaCl module handles this message and sends an echo back to JS. <br>
-  JS side handles the response message and displays it.</p>
+<body>
   <h2>Status: <code id="status">Loading</code></h2>
   
   <h2>NaCl messages:</h2>
@@ -32,11 +44,24 @@
 
   </div>
   <div id="a1"></div>
-<p id="nacl_output"> </p>
+	<p id="nacl_output"> </p>
+	  <div id="logs_area">
+    <h2>NaCl messages: </h2>
+    <textarea id="logs" rows="20" cols="80" readonly></textarea>
+    <textarea id="logs2" rows="20" cols="80" readonly></textarea>
+  </div>
   <script>
+
+var kLibAvPrefix = "LIBAV:";
+var kLogPrefix = "LOG:";
+var kInfoPrefix = "INFO:";
+var kErrorPrefix = "ERROR:";
+var kDebugPrefix = "DEBUG:";
+  
   var ptsDiv = document.getElementById("a1");
   var listenerDiv = document.getElementById("listener");
-  
+  var logs = document.getElementById("logs");
+  var logs2 = document.getElementById("logs2");
   
   var demo_name = 'Native Player';
 var demo_description = '';
@@ -47,8 +72,55 @@ var nacl_height = 480;
   
   var x = 0;
   var b = 0;
+  
+  var logI = 0;
+    var logI2 = 0;
+    
+  function startsWith(s, prefix) {
+  return s.indexOf(prefix) === 0;
+}
+  
+  function printIfLog(message) {
+  if (typeof message == "string") 
+  {
+          if(startsWith(message, kLogPrefix) || startsWith(message, kErrorPrefix) || startsWith(message, kInfoPrefix)
+           || startsWith(message, kDebugPrefix)) {
+    if(logI > 200)
+    {
+	    logs.value = message;
+	    logI = 0;
+    }
+    else
+    {  
+    	logI++;
+     	logs.value += message;
+     }
+    logs.scrollTop = logs.scrollHeight;
+    return true;
+  }
+            if(startsWith(message, kLibAvPrefix)) {
+    if(logI2 > 200)
+    {
+	    logs2.value = message;
+	    logI2 = 0;
+    }
+    else
+    {  
+    	logI2++;
+     	logs2.value += message;
+     }
+    logs2.scrollTop = logs2.scrollHeight;
+    return true;
+  }
+  }
+  return false;
+}
+  
   /* Handles messages sent from NaCl app by PostMessage(). */
   function handleMessage(message) {
+    if (printIfLog(message.data)) {  // function defined in common.js
+    return;   // this was a log or error message, so we can finish this handling
+  }
   if(typeof message.data === 'string' && message.data.includes("pts"))
   {
   if(b < 50)
@@ -59,6 +131,7 @@ var nacl_height = 480;
   }
   else
   {
+  /*
   if(x < 30)
   {
   	document.getElementById("nacl_output").innerHTML += message.data +"<br />";
@@ -69,6 +142,7 @@ var nacl_height = 480;
       x = 0;
   }
   x++;
+  */
   }
   }
   

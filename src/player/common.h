@@ -12,6 +12,16 @@
 #include "nacl_player/common.h"
 #include "media_stream.h"
 
+#include "../logger.h"
+
+
+#define LOG_STATS __LINE__, __func__, __FILE__
+#define LOG_LIBAV(msg, ...) Logger::LibAv(LOG_STATS, msg, ##__VA_ARGS__)
+#define LOG_INFO(msg, ...) Logger::Info(LOG_STATS, msg, ##__VA_ARGS__)
+#define LOG_ERROR(msg, ...) Logger::Error(LOG_STATS, msg, ##__VA_ARGS__)
+#define LOG_DEBUG(msg, ...) Logger::Debug(LOG_STATS, msg, ##__VA_ARGS__)
+
+
 enum class StreamType : int32_t {
   Video = static_cast<int32_t>(MediaStreamType::Video),
   Audio = static_cast<int32_t>(MediaStreamType::Audio),

@@ -20,5 +20,6 @@ OBJS :=
 SUBDIRS := \
 src \
 src/htsp \
+src/player/Muxer \
 src/player \
 

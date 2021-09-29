@@ -8,6 +8,7 @@ RM := python $(NACL_SDK_ROOT)/tools/oshelpers.py rm
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include src/player/Muxer/subdir.mk
 -include src/player/subdir.mk
 -include src/htsp/subdir.mk
 -include src/subdir.mk
@@ -33,13 +34,13 @@ all: hello_world_cpp.nmf
 hello_world_cpp.nmf: $(NACL_EXECUTABLE)
 	@echo 'Building target: $@'
 	@echo 'Generating manifest file'
-	python "$(NACL_SDK_ROOT)/tools/create_nmf.py" -s ./  -o "hello_world_cpp.nmf" $(NACL_EXECUTABLE)
+	python2 "$(NACL_SDK_ROOT)/tools/create_nmf.py" -s ./  -o "hello_world_cpp.nmf" $(NACL_EXECUTABLE)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 hello_world_cpp.pexe: $(OBJS)
 	@echo 'Invoking: NaCl C++ linker'
-	pnacl-clang++ -o "hello_world_cpp.pexe" $(OBJS) -L"C:\Users\jan.husak\Downloads\hello_world_cpp\third_party\lib" -L"C:\Users\jan.husak\pepper_47/lib/pnacl/Debug" -lpthread -lnacl_player -lnacl_io -lppapi -lppapi_cpp -lhts
+	pnacl-clang++ -o "hello_world_cpp.pexe" $(OBJS) -L"/home/preclikos/tizen-repos/TizenHTSP/third_party/lib" -L"/home/preclikos/pepper_63/lib/pnacl/Debug" -lhts -lpthread -lavformat -lavcodec -lbz2 -lavutil -lm -lglibc-compat -lc++ -lcrypto -lz -lnacl_player -lnacl_io -lppapi -lppapi_cpp
 	@echo 'Finished building: $@'
 	@echo ' '
 

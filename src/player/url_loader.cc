@@ -9,8 +9,9 @@
 #include "ppapi/c/ppb_instance.h"
 #include "ppapi/cpp/module.h"
 #include "ppapi/cpp/var.h"
-
-#include "loader.h"
+#include "common.h"
+#include "url_loader.h"
+#include <sstream>
 
 #ifdef WIN32
 #undef min
@@ -22,13 +23,14 @@
 #endif
 
 URLLoaderHandler* URLLoaderHandler::Create(pp::Instance* instance,
-                                           const std::string& url) {
-  return new URLLoaderHandler(instance, url);
+                                           const std::string& url, IURLLoaderHandlerListener& connListener) {
+  return new URLLoaderHandler(instance, url, connListener);
 }
 
 URLLoaderHandler::URLLoaderHandler(pp::Instance* instance,
-                                   const std::string& url)
+                                   const std::string& url, IURLLoaderHandlerListener& connListener)
     : instance_(instance),
+	  m_connListener(connListener),
       url_(url),
       url_request_(instance),
       url_loader_(instance),
@@ -85,13 +87,18 @@ void URLLoaderHandler::AppendDataBytes(const char* buffer, int32_t num_bytes) {
     return;
   // Make sure we don't get a buffer overrun.
   num_bytes = std::min(READ_BUFFER_SIZE, num_bytes);
-  instance_->PostMessage("Has buffer");
+
+  //LOG_DEBUG("Data -> %s", str);
   // Note that we do *not* try to minimally increase the amount of allocated
   // memory here by calling url_response_body_.reserve().  Doing so causes a
   // lot of string reallocations that kills performance for large files.
-  url_response_body_.insert(
-      url_response_body_.end(), buffer, buffer + num_bytes);
+  //url_response_body_.insert(
+  //    url_response_body_.end(), buffer, buffer + num_bytes);
+  m_connListener.ReceiveData(buffer, num_bytes);
 }
+
+
+
 
 void URLLoaderHandler::OnRead(int32_t result) {
   if (result == PP_OK) {
@@ -154,14 +161,9 @@ void URLLoaderHandler::ReportResult(const std::string& fname,
                                     const std::string& text,
                                     bool success) {
   if (success)
-  {    //printf("URLLoaderHandler::ReportResult(Ok).\n");
-  instance_->PostMessage("URLLoaderHandler::ReportResult(Err)");
-  }
+    printf("URLLoaderHandler::ReportResult(Ok).\n");
   else
-  {
-	  instance_->PostMessage("URLLoaderHandler::ReportResult(Err)");
-    //printf("URLLoaderHandler::ReportResult(Err). %s\n", text.c_str());
-  }
+    printf("URLLoaderHandler::ReportResult(Err). %s\n", text.c_str());
   fflush(stdout);
   if (instance_) {
     pp::Var var_result(fname + "\n" + text);

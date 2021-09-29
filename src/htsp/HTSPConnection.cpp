@@ -65,7 +65,7 @@ HTSPConnection::~HTSPConnection()
 
 void HTSPConnection::Init()
 {
-	PP_NetAddress_IPv4 ipv4_addr = { ConvertToNetEndian16(9982), { 192, 168, 1, 230 } };
+	PP_NetAddress_IPv4 ipv4_addr = { ConvertToNetEndian16(9982), { 192, 168, 1, 210 } };
 	const pp::NetAddress netAddr = pp::NetAddress(instance, ipv4_addr);
 
 	pp::CompletionCallback callback = cc_factory_.NewCallback(&HTSPConnection::TcpSocketDidOpen);
@@ -82,13 +82,14 @@ void HTSPConnection::Register(int32_t result)
     //std::unique_lock<std::recursive_mutex> locks(m_mutex);
     bool auth = SendAuth(lock, "test", "test");
     //if(auth)
-    	//instance->PostMessage("auth-t");
+    	instance->PostMessage("auth-t");
 
     htsmsg_t* msg = htsmsg_create_map();
     htsmsg_add_u32(msg, "subscriptionId", 10);
-    htsmsg_add_u32(msg, "channelId", 136089876);
-    //htsmsg_add_str(msg, "profile", "webtv-h264-aac-matroska");
-    SendMessage("subscribe", msg);
+    htsmsg_add_u32(msg, "channelId", 874852563);
+    //htsmsg_add_str(msg, "profile", "webtv-h264-aac-mpegts");
+    //htsmsg_add_str(msg, "profile", "pass");
+    //SendMessage("subscribe", msg);
 }
 
 bool HTSPConnection::SendHello(std::unique_lock<std::recursive_mutex>& lock)
@@ -302,6 +303,7 @@ void HTSPConnection::MessageReadLoop(int32_t result)
 
 		if(!ReadMessage())
 		{
+			instance->PostMessage("Wrong Msg");
 			return;
 		}
 

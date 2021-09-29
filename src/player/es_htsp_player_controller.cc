@@ -14,8 +14,11 @@
  #include <stdint.h>
 #include  <cstring>
 #include <string.h>
-#include "stream_demuxer.h"
+#include "ffmpeg_demuxer.h"
 #include "common.h"
+#include <iostream>
+#include <list>
+#include <iterator>
 
 extern "C" {
 #include <ppapi/c/pp_macros.h>
@@ -54,28 +57,107 @@ public:
  }
 };
 
+
+void EsHtspPlayerController::AttachSource()
+{
+	if(videoInit && audioInit)
+	{
+		int32_t resulta = player_->AttachDataSource(*data_source_);
+		LOG_DEBUG("Add source to player result: %d", resulta);
+	}
+}
+
 void EsHtspPlayerController::InitPlayer() {
-  //LOG_INFO("Loading media from : [%s]", mpd_file_path.c_str());
+
   CleanPlayer();
-  //demuxer_ = StreamDemuxer::Create(instance_handle_, demuxer_type, init_mode);
 
-  Parser = AvcParser();
+  demuxer_ = StreamDemuxer::Create(instance_, StreamDemuxer::kVideo, StreamDemuxer::kFullInitialization);
 
-  //demuxer_ = MakeUnique<FFMpegDemuxer>(instance_, 512, StreamDemuxer::kVideo, StreamDemuxer::kFullInitialization);
-  //demuxer_ = StreamDemuxer::Create(instance_, StreamDemuxer::kVideo, StreamDemuxer::kFullInitialization);
 
-  auto es_packet_callback = [this](StreamDemuxer::Message message,
+  auto es_packet_ = [this](StreamDemuxer::Message message,
       std::unique_ptr<ElementaryStreamPacket> packet) {
-    OnEsPacket(message, std::move(packet));
+
+	  	auto esPacket = packet->GetESPacket();
+
+
+	  	if(message == StreamDemuxer::Message::kVideoPkt && videoInit) //Video Packet
+	  	{
+	  		auto resultapp = elementary_stream_video->AppendPacket(esPacket);
+
+			if(resultapp != 0)
+			{
+				LOG_LIBAV("Video Packet append fail: %d", resultapp);
+			}
+	  	}
+
+	  	if(message == StreamDemuxer::Message::kAudioPkt && audioInit) //Audio Packet
+	  	{
+	  		auto resultapp = elementary_stream_audio->AppendPacket(esPacket);
+
+			if(resultapp != 0)
+			{
+				LOG_LIBAV("Audio Packet append fail: %d", resultapp);
+			}
+	  	}
   };
 
-  //demuxer_->Init(es_packet_callback, pp::MessageLoop::GetCurrent());
 
-  //demuxer_->SetVideoConfigListener([this](
-  //      const VideoConfig& config) {
-  //    OnVideoConfig(config);
-  //  });
-  //player_ = make_shared<MediaPlayer>(Samsung::NaClPlayer::MediaPlayer::DoNotBindPlayerToDisplay, Samsung::NaClPlayer::MediaPlayer::MediaPlayerModeD2TV);
+
+  demuxer_->SetVideoConfigListener([this](
+        const VideoConfig& config) {
+
+		auto video_stream = make_shared<VideoElementaryStream>();
+		data_source_->AddStream(*video_stream, this);
+
+		video_stream->SetVideoCodecType(config.codec_type);
+		video_stream->SetVideoCodecProfile(config.codec_profile);
+		video_stream->SetVideoFrameFormat(config.frame_format);
+		video_stream->SetVideoFrameSize(config.size);
+		video_stream->SetFrameRate(config.frame_rate);
+
+	    video_stream->SetCodecExtraData(config.extra_data.size(),
+	                                    &config.extra_data.front());
+
+
+		auto result_init_video = video_stream->InitializeDone(Samsung::NaClPlayer::StreamInitializationMode_Full);
+		//auto result_init_video = video_stream->InitializeDone();
+		LOG_DEBUG("Video init result: %d", result_init_video);
+
+		elementary_stream_video =  std::static_pointer_cast<ElementaryStream>(video_stream);
+
+		videoInit = true;
+
+	  	AttachSource();
+    });
+
+  demuxer_->SetAudioConfigListener([this](
+        const AudioConfig& config) {
+/*
+		auto audio_stream = make_shared<AudioElementaryStream>();
+		data_source_->AddStream(*audio_stream, this);
+
+		audio_stream->SetAudioCodecType(config.codec_type);
+		audio_stream->SetAudioCodecProfile(config.codec_profile);
+		audio_stream->SetSampleFormat(config.sample_format);
+		audio_stream->SetBitsPerChannel(config.bits_per_channel);
+		audio_stream->SetSamplesPerSecond(config.samples_per_second);
+		audio_stream->SetChannelLayout (config.channel_layout);
+
+		audio_stream->SetCodecExtraData(config.extra_data.size(),
+	                                    &config.extra_data.front());
+
+		//auto result_init_audio = audio_stream->InitializeDone(Samsung::NaClPlayer::StreamInitializationMode_Full);
+		auto result_init_audio = audio_stream->InitializeDone();
+		LOG_DEBUG("Audio init result: %d", result_init_audio);
+
+		elementary_stream_audio =  std::static_pointer_cast<ElementaryStream>(audio_stream);
+
+		audioInit = true;
+
+	  	AttachSource();
+	  	*/
+    });
+
   player_ = make_shared<MediaPlayer>();
   listeners_.player_listener =
       make_shared<MediaPlayerListener>();
@@ -85,18 +167,6 @@ void EsHtspPlayerController::InitPlayer() {
   player_->SetMediaEventsListener(listeners_.player_listener);
   player_->SetBufferingListener(listeners_.buffering_listener);
 
-  //video_stream->SetCodecExtraData(video_config.extra_data.size(),
-  //                                &video_config.extra_data.front());
-
-
-/*
-  //elementary_stream_ =  std::static_pointer_cast<ElementaryStream>(video_stream);
-
-  //elementary_stream_->App
-
-  //es_data_source->AddStream(*video_stream, this);
-*/
-  //int32_t result = player_->AttachDataSource(*data_source_);
 
   int32_t ret = player_->SetDisplayRect(view_rect_);
 
@@ -109,21 +179,16 @@ void EsHtspPlayerController::InitPlayer() {
 	  free(str);
   }
 
-  //InitializeSubtitles(subtitle, encoding);
 
   player_thread_ = MakeUnique<pp::SimpleThread>(instance_);
   player_thread_->Start();
 
-  //if (!demuxer_->Init(es_packet_callback_, pp::MessageLoop::GetCurrent()))
-	  //pp_Instance->PostMessage("Demuxer init fail");
-  //Here init media provider
-  //player_thread_->message_loop().PostWork(
-      //cc_factory_.NewCallback(&EsDashPlayerController::InitializeHtsp,
-                              //mpd_file_path));
+  data_source_ = std::make_shared<ESDataSource>();
 
-  //Play();
-  //init = 1;
+  demuxer_->Init(es_packet_, pp::MessageLoop::GetCurrent());
+
 }
+
 void EsHtspPlayerController::InitializeSubtitles(const std::string& subtitle,
                                                  const std::string& encoding) {}
 
@@ -341,49 +406,53 @@ void EsHtspPlayerController::Config(int32_t result, htsmsg_t* msg){
 	auto video_stream = make_shared<VideoElementaryStream>();
 	data_source_->AddStream(*video_stream, this);
 
-	//auto video_stream =  std::static_pointer_cast<VideoElementaryStream>(elementary_stream_);
 	video_stream->SetVideoCodecType(Samsung::NaClPlayer::VIDEOCODEC_TYPE_H264);
-	video_stream->SetVideoCodecProfile(Samsung::NaClPlayer::VIDEOCODEC_PROFILE_H264_HIGH);
+	video_stream->SetVideoCodecProfile(Samsung::NaClPlayer::VIDEOCODEC_PROFILE_H264_HIGH10);
 	video_stream->SetVideoFrameFormat(Samsung::NaClPlayer::VIDEOFRAME_FORMAT_YV12);
 	video_stream->SetVideoFrameSize(Samsung::NaClPlayer::Size(1920, 1080));
-	video_stream->SetFrameRate(Samsung::NaClPlayer::Rational(1, 25));
+	video_stream->SetFrameRate(Samsung::NaClPlayer::Rational(2, 50));
 
-	/*
-	auto audio_stream = make_shared<AudioElementaryStream>();
-	data_source_->AddStream(*audio_stream, this);
 
-	audio_stream->SetAudioCodecType(Samsung::NaClPlayer::AUDIOCODEC_TYPE_MP2);
-	audio_stream->SetSampleFormat(Samsung::NaClPlayer::SAMPLEFORMAT_S32);
-	audio_stream->SetBitsPerChannel(128000);
-	audio_stream->SetSamplesPerSecond(48000);
-	audio_stream->SetChannelLayout (Samsung::NaClPlayer::CHANNEL_LAYOUT_STEREO);
-*/
+	//auto audio_stream = make_shared<AudioElementaryStream>();
+	//data_source_->AddStream(*audio_stream, this);
 
-	auto map = htsmsg_get_map(msg, "streams");
+	//audio_stream->SetAudioCodecType(Samsung::NaClPlayer::AUDIOCODEC_TYPE_AAC);
+	//audio_stream->SetSampleFormat(Samsung::NaClPlayer::SAMPLEFORMAT_PLANARF32);
+	//audio_stream->SetBitsPerChannel(16);
+	//audio_stream->SetSamplesPerSecond(48000);
+	//audio_stream->SetChannelLayout (Samsung::NaClPlayer::CHANNEL_LAYOUT_STEREO);
+
+
+	//auto map = htsmsg_get_list(msg, "streams");// htsmsg_get_map(msg, "streams");
+
 
 	if (!htsmsg_get_bin(msg, "meta", &metabin, &metabinlen))
 	{
-		//sbuf_t payload;
-		//Parser.sbuf_init(&payload);
-
-	//	Parser.isom_write_avcc(&payload, (const uint8_t*)metabin, metabinlen);
-		//pp_Instance->PostMessage("Set - No extra");
+		LOG_DEBUG("Set - No extra");
 		video_stream->SetCodecExtraData(metabinlen, metabin);
 	}
 
 	//auto result_init_audio = audio_stream->InitializeDone();
+	//pp_Instance->PostMessage(result_init_audio);
 	auto result_init_video = video_stream->InitializeDone();
 	pp_Instance->PostMessage(result_init_video);
 
-	elementary_stream_video =  std::static_pointer_cast<ElementaryStream>(video_stream);
+
 
 	int32_t resulta = player_->AttachDataSource(*data_source_);
 	pp_Instance->PostMessage(resulta);
 
+	elementary_stream_video =  std::static_pointer_cast<ElementaryStream>(video_stream);
 	//elementary_stream_audio =  std::static_pointer_cast<ElementaryStream>(audio_stream);
 
 	init = 1;
-	pp_Instance->PostMessage("Set Extra");
+	LOG_DEBUG("Init done");
+}
+
+void EsHtspPlayerController::AddHttpData(const char* buffer, int32_t num_bytes)
+{
+	std::vector<uint8_t> raw_image(buffer, buffer + num_bytes);
+	demuxer_->Parse(raw_image);
 }
 
 void EsHtspPlayerController::AddData(const std::string& method, htsmsg_t* msg)
@@ -391,20 +460,22 @@ void EsHtspPlayerController::AddData(const std::string& method, htsmsg_t* msg)
 
 	if(method == "subscriptionStart")
 	{
-		Config(0, msg);
+		//Config(0, msg);
 	}
 
 		if(method == "muxpkt")
 		{
+			/*
 			if(init == 0)
 			{
 				pp_Instance->PostMessage("Packet before init");
 				return;
-			}
-
+			}*/
 			MuxPacket(msg);
 		}
 }
+
+
 
 void EsHtspPlayerController::MuxPacket(htsmsg_t* msgs){
 	htsmsg_t *msg = htsmsg_copy(msgs);
@@ -417,17 +488,10 @@ void EsHtspPlayerController::MuxPacket(htsmsg_t* msgs){
 		pp_Instance->PostMessage("Malform");
 		return;
 	}
-
+	init++;
 	if(idx == 1)
 	{
-
 		std::unique_ptr<ESPacket> es_packet = MakeUnique<ESPacket>();
-
-		init++;
-		if(init < 50)
-		{
-			return;
-		}
 
 
 
@@ -437,14 +501,16 @@ void EsHtspPlayerController::MuxPacket(htsmsg_t* msgs){
 		htsmsg_get_s64(msg, "pts", &s64);
 
 		double resultpts = (double)s64 / (double)deleno;
-		pp_Instance->PostMessage("pts:" +std::to_string(resultpts));
-		es_packet->pts = Samsung::NaClPlayer::TimeTicks(resultpts);
+		//pp_Instance->PostMessage("pts:" +std::to_string(resultpts));
+
 
 		int64_t s642 = 0;
 		htsmsg_get_s64(msg, "dts", &s642);
 
 		double resultdts = (double)s642 / (double)deleno;
 		//pp_Instance->PostMessage("pts / dts:" +std::to_string(resultdts));
+
+		es_packet->pts = Samsung::NaClPlayer::TimeTicks(resultpts);
 		es_packet->dts = Samsung::NaClPlayer::TimeTicks(resultdts);
 
 		uint32_t u32 = 0;
@@ -466,46 +532,81 @@ void EsHtspPlayerController::MuxPacket(htsmsg_t* msgs){
 			}
 		}
 
+
+		pp_Instance->PostMessage("Pass - " + std::to_string(init));
+		const vector<uint8_t> vuc(static_cast<const uint8_t*>(bin), static_cast<const uint8_t*>(bin) + binlen);
+		demuxer_->Parse(vuc);
+/*
+
+
 		es_packet->buffer = bin;
 		es_packet->size = binlen;
-/*
-		if(isKey)
-		{
 
-		}
-		else
+
+		auto resultapp = elementary_stream_video->AppendPacket(*es_packet);
+
+		if(resultapp != 0)
 		{
-			void* binwithout = malloc(binlen - 14);
-			std::memcpy(binwithout, ((char*)bin) + 14, binlen - 14);
-			es_packet->buffer = binwithout;
-			es_packet->size = binlen - 14;
+			pp_Instance->PostMessage(std::to_string(resultapp) + "-" + std::to_string(init));
+			pp_Instance->PostMessage("PTS:" +std::to_string(resultpts) +" DTS:" +std::to_string(resultdts) + " Key: "+std::to_string(isKey));
+			breakRun = false;
+		}
+		else {
+			pp_Instance->PostMessage("PTS:" +std::to_string(resultpts) +" DTS:" +std::to_string(resultdts) + " Key: "+std::to_string(isKey));
+			pp_Instance->PostMessage("Video Pack - append -" + std::to_string(init));
 		}
 */
-		//es_packet->buffer = bin;
-		//es_packet->size = binlen;
+	}
 
-		//pp_Instance->PostMessage("Pack - append");
-		Play();
-		if(idx == 1)
-		{
-			auto resultapp = elementary_stream_video->AppendPacket(*es_packet);
-			if(resultapp != 0)
-			{
-				//pp_Instance->PostMessage(std::to_string(resultapp) + "-" + std::to_string(init));
-			}
-		}
+
+	if(idx == 3)
+	{
 		/*
-		if(idx == 2)
+		pp_Instance->PostMessage("Pass - " + std::to_string(init));
+		const vector<uint8_t> vuc(static_cast<const uint8_t*>(bin), static_cast<const uint8_t*>(bin) + binlen);
+		demuxer_->Parse(vuc);
+
+
+		std::unique_ptr<ESPacket> es_packet = MakeUnique<ESPacket>();
+
+		double deleno = 1000000;
+
+		int64_t s64 = 0;
+		htsmsg_get_s64(msg, "pts", &s64);
+
+		double resultpts = (double)s64 / (double)deleno;
+		pp_Instance->PostMessage("PTS:" +std::to_string(resultpts));
+		es_packet->pts = Samsung::NaClPlayer::TimeTicks(resultpts);
+
+		int64_t s642 = 0;
+		htsmsg_get_s64(msg, "dts", &s642);
+
+		double resultdts = (double)s642 / (double)deleno;
+		//pp_Instance->PostMessage("pts / dts:" +std::to_string(resultdts));
+		es_packet->dts = Samsung::NaClPlayer::TimeTicks(resultdts);
+
+		uint32_t u32 = 0;
+		htsmsg_get_u32(msg, "duration", &u32);
+		double resultduration = (double)u32 / (double)deleno;
+		//pp_Instance->PostMessage("Durr:" +std::to_string(resultduration));
+		es_packet->duration = Samsung::NaClPlayer::TimeTicks(resultduration);
+
+		es_packet->buffer = bin;
+		es_packet->size = binlen;
+
+		auto resultapp = elementary_stream_audio->AppendPacket(*es_packet);
+		if(resultapp != 0)
 		{
-			auto resultapp = elementary_stream_audio->AppendPacket(*es_packet);
-			if(resultapp != 0)
-			{
-				pp_Instance->PostMessage(resultapp);
-			}
+			pp_Instance->PostMessage(resultapp);
+		}
+		else {
+			pp_Instance->PostMessage("Audio Pack - append");
 		}*/
 	}
-}
 
+	Play();
+
+}
 
 
 

@@ -5,31 +5,65 @@
 #include <sstream>
 #include <iostream>
 #include <malloc.h>
-#include "loader.h"
+
+#include "logger.h"
+#include "player/url_loader.h"
 
 extern "C"
 {
 	#include "libhts/htsmsg.h"
+	#include <libavcodec/avcodec.h>
+	#include <libavformat/avformat.h>
 }
 
 #include <nacl_io/nacl_io.h>
 
 HelloWorld::~HelloWorld() {/* UnregisterMessageHandler();
 */
+
+
 }
 const char* kEcho = "Echo from NaCl: ";
 
 bool HelloWorld::Init(uint32_t argc, const char** argn, const char** argv) {
 	InitNaClIO();
+
+	Logger::InitializeInstance(this);
 	htspConnection.Init();
+/*
+    av_register_all();
+
+    const char *url = "http://192.168.1.210:9981/stream/channelid/874852563?profile=pass";
+    AVFormatContext *s = NULL;
+
+    int ret = avformat_open_input(&s, url, NULL, NULL);
+    if (ret < 0)
+    {
+    	LOG_DEBUG("Error open %d", ret);
+    }
+    else
+    {
+    	LOG_DEBUG("Sucess open %d", ret);
+    }
+*/
+	/*
+    URLLoaderHandler* handler = URLLoaderHandler::Create(this, "http://192.168.1.210:9981/stream/channelid/874852563?profile=pass", *this);
+    if (handler != NULL) {
+      // Starts asynchronous download. When download is finished or when an
+      // error occurs, |handler| posts the results back to the browser
+      // vis PostMessage and self-destroys.
+      handler->Start();
+    }*/
 
 	  player_thread_.message_loop().PostWork(
 	    cc_factory_.NewCallback(
 	        &HelloWorld::InitPlayer));
 
-	  auto loader = URLLoaderHandler::Create(this, "http://192.168.1.230:9981/stream/channelid/136089876?profile=pass");
+	  //auto loader = URLLoaderHandler::Create(this, "http://192.168.1.230:9981/stream/channelid/136089876?profile=pass");
 
-	  loader->Start();
+	  //loader->Start();
+
+	  LOG_INFO("Finished Init");
 
 	return true;
 }
@@ -63,6 +97,12 @@ void HelloWorld::DispatchMessageMessageOnSideThread(int32_t result)
 void HelloWorld::HandleMessage(const pp::Var& message)
 {
 
+}
+
+bool HelloWorld::ReceiveData(const char* buffer, int32_t num_bytes)
+{
+	controller->AddHttpData(buffer, num_bytes);
+	return true;
 }
 
 bool HelloWorld::ProcessMessage(const std::string& method, htsmsg_t* msg)

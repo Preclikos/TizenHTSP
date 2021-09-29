@@ -21,6 +21,9 @@
 #ifndef NATIVE_PLAYER_INC_PLAYER_ES_DASH_PLAYER_ES_DASH_PLAYER_CONTROLLER_H_
 #define NATIVE_PLAYER_INC_PLAYER_ES_DASH_PLAYER_ES_DASH_PLAYER_CONTROLLER_H_
 
+#include <iostream>
+#include <list>
+#include <iterator>
 #include <array>
 #include <memory>
 #include <string>
@@ -38,11 +41,11 @@
 #include "player_listeners.h"
 #include "common.h"
 #include "media_stream.h"
-#include "parser_avc.h"
- #include <stdint.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-//#include "ffmpeg_demuxer.h"
+#include "Muxer/mpegts_muxer.h"
+#include "stream_demuxer.h"
 
 extern "C"
 {
@@ -92,6 +95,7 @@ public Samsung::NaClPlayer::ElementaryStreamListener,
     public std::enable_shared_from_this<PlayerController>
 	 {
  public:
+
   /// Creates an <code>EsDashPlayerController</code> object. NaCl Player must
   /// be initialized using the <code>InitPlayer()</code> method before a
   /// playback can be started.
@@ -162,12 +166,12 @@ public Samsung::NaClPlayer::ElementaryStreamListener,
   void OnSeekData(Samsung::NaClPlayer::TimeTicks new_position) override;
 
   void AddData(const std::string& method, htsmsg_t* msg);
+  void AddHttpData(const char* buffer, int32_t num_bytes);
   void Config(int32_t result, htsmsg_t* msg);
-  void OnEsPacket(
-		    StreamDemuxer::Message message,
-		    std::unique_ptr<ElementaryStreamPacket> packet);
+  void OnEsPacket(std::unique_ptr<ElementaryStreamPacket> packet);
 
   void OnVideoConfig(const VideoConfig& video_config);
+  void OnAudioConfig(const AudioConfig& audio_config);
  private:
   /// @public
   /// Checks every stream if there is enough data buffered. If not, initiates
@@ -270,9 +274,24 @@ public Samsung::NaClPlayer::ElementaryStreamListener,
 
   void MuxPacket(htsmsg_t* msg);
   int32_t init = 0;
+  std::list <Samsung::NaClPlayer::ESPacket> gqlist1;
 
-  AvcParser Parser;
+bool breakRun = true;
 
+bool videoInit = false;
+bool audioInit = false;
+
+void AttachSource();
+
+std::unique_ptr<StreamDemuxer> demuxer_;
+
+std::list<Samsung::NaClPlayer::ESPacket> PacketList;
+
+std::function<void(StreamDemuxer::Message,
+                   std::unique_ptr<ElementaryStreamPacket>)>
+                       es_packet_callback_;
+
+const std::vector<uint8_t> ER;
   class Impl;
   friend class Impl;
 

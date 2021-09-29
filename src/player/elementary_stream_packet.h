@@ -166,8 +166,6 @@ class ElementaryStreamPacket {
   std::vector<uint8_t> iv_;
   std::vector<Samsung::NaClPlayer::EncryptedSubsampleDescription> subsamples_;
   Samsung::NaClPlayer::ESPacketEncryptionInfo encryption_info_;
-
-  double duration = 0;
 };
 
 #endif  // SRC_PLAYER_ES_DASH_PLAYER_DEMUXER_ELEMENTARY_STREAM_PACKET_H_

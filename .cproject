@@ -12,9 +12,6 @@
 					<extension id="org.eclipse.cdt.core.VCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.tizen.nativeapp.SlpMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.tizen.nativeapp.SlpGccErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.tizen.nativecore.NativeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -44,17 +41,26 @@
 									<listOptionValue builtIn="false" value="${NACL_SDK_ROOT}/lib/pnacl/${ConfigName}"/>
 								</option>
 								<option id="org.tizen.web.tv.sec.nacl.builder.toolchain.linker.cpp.libs.393364127" name="Libraries (-l)" superClass="org.tizen.web.tv.sec.nacl.builder.toolchain.linker.cpp.libs" useByScannerDiscovery="false" valueType="stringList">
+									<listOptionValue builtIn="false" value="hts"/>
 									<listOptionValue builtIn="false" value="pthread"/>
+									<listOptionValue builtIn="false" value="avformat"/>
+									<listOptionValue builtIn="false" value="avcodec"/>
+									<listOptionValue builtIn="false" value="bz2"/>
+									<listOptionValue builtIn="false" value="avutil"/>
+									<listOptionValue builtIn="false" value="m"/>
+									<listOptionValue builtIn="false" value="glibc-compat"/>
+									<listOptionValue builtIn="false" value="c++"/>
+									<listOptionValue builtIn="false" value="crypto"/>
+									<listOptionValue builtIn="false" value="z"/>
 									<listOptionValue builtIn="false" value="nacl_player"/>
 									<listOptionValue builtIn="false" value="nacl_io"/>
 									<listOptionValue builtIn="false" value="ppapi"/>
 									<listOptionValue builtIn="false" value="ppapi_cpp"/>
-									<listOptionValue builtIn="false" value="hts"/>
 								</option>
 								<inputType id="org.tizen.web.tv.sec.nacl.builder.toolchain.linker.input.718059209" name="Linker input" superClass="org.tizen.web.tv.sec.nacl.builder.toolchain.linker.input"/>
 							</tool>
 							<tool id="org.tizen.web.tv.sec.nacl.builder.toolchain.debug.toolchain.translator.196759292" name="NaCl Translator" superClass="org.tizen.web.tv.sec.nacl.builder.toolchain.debug.toolchain.translator"/>
-							<tool id="org.tizen.web.tv.sec.nacl.builder.toolchain.debug.toolchain.manifest.1237752302" name="NaCl manifest generator" superClass="org.tizen.web.tv.sec.nacl.builder.toolchain.debug.toolchain.manifest"/>
+							<tool command="python2 &quot;$(NACL_SDK_ROOT)/tools/create_nmf.py&quot; -s ./" id="org.tizen.web.tv.sec.nacl.builder.toolchain.debug.toolchain.manifest.1237752302" name="NaCl manifest generator" superClass="org.tizen.web.tv.sec.nacl.builder.toolchain.debug.toolchain.manifest"/>
 						</toolChain>
 					</folderInfo>
 				</configuration>
@@ -72,9 +78,6 @@
 					<extension id="org.eclipse.cdt.core.VCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.tizen.nativeapp.SlpMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.tizen.nativeapp.SlpGccErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.tizen.nativecore.NativeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
